@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nasa.MarsRoboticRover", "Nasa.MarsRoboticRover\Nasa.MarsRoboticRover.csproj", "{2F8E6C57-30B2-4E51-B89B-93446E4102F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.BLL", "Nasa.MarsRoboticRover.BLL\Nasa.MarsRoboticRover.BLL.csproj", "{3DC6022B-FAA2-46C6-85F5-4F5CC99C9DCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.Test", "Nasa.MarsRoboticRover.Test\Nasa.MarsRoboticRover.Test.csproj", "{E6106B74-E5C3-45C8-855C-33FA88904663}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.Entities", "Nasa.MarsRoboticRover.Entities\Nasa.MarsRoboticRover.Entities.csproj", "{7593F3DD-8BA2-4DEA-BD95-AD3807F17F3B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F8E6C57-30B2-4E51-B89B-93446E4102F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F8E6C57-30B2-4E51-B89B-93446E4102F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F8E6C57-30B2-4E51-B89B-93446E4102F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F8E6C57-30B2-4E51-B89B-93446E4102F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DC6022B-FAA2-46C6-85F5-4F5CC99C9DCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DC6022B-FAA2-46C6-85F5-4F5CC99C9DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DC6022B-FAA2-46C6-85F5-4F5CC99C9DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DC6022B-FAA2-46C6-85F5-4F5CC99C9DCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6106B74-E5C3-45C8-855C-33FA88904663}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6106B74-E5C3-45C8-855C-33FA88904663}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6106B74-E5C3-45C8-855C-33FA88904663}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6106B74-E5C3-45C8-855C-33FA88904663}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7593F3DD-8BA2-4DEA-BD95-AD3807F17F3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7593F3DD-8BA2-4DEA-BD95-AD3807F17F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7593F3DD-8BA2-4DEA-BD95-AD3807F17F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7593F3DD-8BA2-4DEA-BD95-AD3807F17F3B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63E289A0-5ACC-4D5D-8B89-4A399C0A5ECF}
+	EndGlobalSection
+EndGlobal
