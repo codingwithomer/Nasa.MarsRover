@@ -2,9 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Nasa.MarsRoboticRover.BLL.Interfaces;
 using Nasa.MarsRoboticRover.DependencyResolvers;
-using Nasa.MarsRoboticRover.Entities.Interfaces;
 using System;
-using System.Collections.Generic;
 
 namespace Nasa.MarsRoboticRover
 {
@@ -18,13 +16,19 @@ namespace Nasa.MarsRoboticRover
 
             Ioc.ConfigureServices(services, configuration);
 
-            string commandInput = Ioc.GetService<ICommandCenter>().SetCommandInputs();
+            var commandCenter = Ioc.GetService<ICommandCenter>();
 
-            List<ICommand> commands = Ioc.GetService<IParser>().Parse(commandInput);
+            var commandInput = commandCenter.SetCommandInputs();
 
-            Ioc.GetService<ICommandCenter>().ExecuteCommands(commands);
+            var commandParser = Ioc.GetService<IParser>();
 
-            Console.WriteLine(Ioc.GetService<ICommandCenter>().GetReportOutput());
+            var commands = commandParser.Parse(commandInput);
+
+            commandCenter.ExecuteCommands(commands);
+
+            var reportOutput = commandCenter.GetReportOutput();
+
+            Console.WriteLine(reportOutput);
 
             Console.ReadKey();
         }

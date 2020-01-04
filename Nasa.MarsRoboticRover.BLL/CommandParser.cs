@@ -105,7 +105,7 @@ namespace Nasa.MarsRoboticRover.BLL
             return commands;
         }
 
-        private static void SetRoverCommand(List<ICommand> commands, int index, char rotationCharacter)
+        private void SetRoverCommand(List<ICommand> commands, int index, char rotationCharacter)
         {
             switch (rotationCharacter)
             {
