@@ -19,39 +19,39 @@ namespace Nasa.MarsRoboticRover.BLL
                 throw new ArgumentException("input", $"Empty input.");
             }
 
-            string[] lines = GetCommandLines(commandInput);
+            string[] commandLines = GetCommandLines(commandInput);
 
             int currentRoverIndex = -1;
 
-            for (int i = 0; i < lines.Count(); i++)
+            for (int i = 0; i < commandLines.Count(); i++)
             {
-                string line = lines[i];
+                string commandLine = commandLines[i];
 
-                if (line.Length == 0)
+                if (commandLine.Length == 0)
                 {
                     throw new ArgumentException("input", $"Empty line not allowed on line {i}.");
                 }
 
-                string[] lineParts = line.Split();
+                string[] commandLineParts = commandLine.Split();
 
-                if (char.IsDigit(line[0]))
+                if (char.IsDigit(commandLine[0]))
                 {
-                    if (lineParts.Count() < 2 || lineParts.Count() > 3)
+                    if (commandLineParts.Count() < 2 || commandLineParts.Count() > 3)
                     {
                         throw new ArgumentException("input", $"Line starting with digit must have either two or three parts on line {i}.");
                     }
 
-                    if (!int.TryParse(lineParts[0], out int x) || x < 0)
+                    if (!int.TryParse(commandLineParts[0], out int x) || x < 0)
                     {
-                        throw new ArgumentException("input", $"Cannot parse positive integer from {lineParts[0]} on line {i}.");
+                        throw new ArgumentException("input", $"Cannot parse positive integer from {commandLineParts[0]} on line {i}.");
                     }
 
-                    if (!int.TryParse(lineParts[1], out int y) || y < 0)
+                    if (!int.TryParse(commandLineParts[1], out int y) || y < 0)
                     {
-                        throw new ArgumentException("input", $"Cannot parse positive integer from {lineParts[1]} on line {i}.");
+                        throw new ArgumentException("input", $"Cannot parse positive integer from {commandLineParts[1]} on line {i}.");
                     }
 
-                    if (lineParts.Count() == 2)
+                    if (commandLineParts.Count() == 2)
                     {
                         if (i != 0)
                         {
@@ -67,12 +67,12 @@ namespace Nasa.MarsRoboticRover.BLL
 
                     else
                     {
-                        if (lineParts[2].Length != 1 || !"NESW".Contains(lineParts[2]))
+                        if (commandLineParts[2].Length != 1 || !"NESW".Contains(commandLineParts[2]))
                         {
                             throw new ArgumentException("input", $"Rover initialization line should have either N, E, S, or W on the last part on line {i}.");
                         }
 
-                        CompassDirection compassDirection = GetCompassDirection(lineParts);
+                        CompassDirection compassDirection = GetCompassDirection(commandLineParts);
 
                         if (currentRoverIndex != -1)
                         {
@@ -90,7 +90,7 @@ namespace Nasa.MarsRoboticRover.BLL
                 }
                 else
                 {
-                    foreach (char rotationString in line)
+                    foreach (char rotationString in commandLine)
                     {
                         SetRoverCommand(commands, i, rotationString);
                     }
