@@ -12,10 +12,10 @@ namespace Nasa.MarsRoboticRover.Entities
         public MarsRover(Position position, CompassDirection compassDirection, ILocation plateau)
         {
             if (!plateau.IsPositionValid(position))
-                throw new ArgumentException("position", $"{position} is not valid.");
+                throw new ArgumentException($"{position} is not valid.", "position");
 
             if (!plateau.IsPositionFree(position))
-                throw new ArgumentException("position", $"{position} is not free.");
+                throw new ArgumentException($"{position} is not free.", "position");
 
             Position = position;
             CompassDirection = compassDirection;
@@ -53,10 +53,10 @@ namespace Nasa.MarsRoboticRover.Entities
             Position position = new Position(x, y);
 
             if (!Plateau.IsPositionValid(position))
-                throw new ArgumentException("position", $"{position} is not valid. Cannot move towards {CompassDirection} from current position {Position}.");
+                throw new ArgumentException($"{position} is not valid. Cannot move towards {CompassDirection} from current position {Position}.", "position");
 
             if (!Plateau.IsPositionFree(position))
-                throw new ArgumentException("position", $"{position} is not free. Cannot move towards {CompassDirection} from current position {Position}.");
+                throw new ArgumentException($"{position} is not free. Cannot move towards {CompassDirection} from current position {Position}.", "position");
 
             Position = position;
         }

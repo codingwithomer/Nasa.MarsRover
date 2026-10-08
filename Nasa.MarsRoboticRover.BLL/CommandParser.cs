@@ -16,7 +16,7 @@ namespace Nasa.MarsRoboticRover.BLL
 
             if (string.IsNullOrEmpty(commandInput))
             {
-                throw new ArgumentException("input", $"Empty input.");
+                throw new ArgumentException($"Empty input.", "input");
             }
 
             string[] commandLines = GetCommandLines(commandInput);
@@ -29,7 +29,7 @@ namespace Nasa.MarsRoboticRover.BLL
 
                 if (commandLine.Length == 0)
                 {
-                    throw new ArgumentException("input", $"Empty line not allowed on line {i}.");
+                    throw new ArgumentException($"Empty line not allowed on line {i}.", "input");
                 }
 
                 string[] commandLineParts = commandLine.Split();
@@ -38,24 +38,24 @@ namespace Nasa.MarsRoboticRover.BLL
                 {
                     if (commandLineParts.Count() < 2 || commandLineParts.Count() > 3)
                     {
-                        throw new ArgumentException("input", $"Line starting with digit must have either two or three parts on line {i}.");
+                        throw new ArgumentException($"Line starting with digit must have either two or three parts on line {i}.", "input");
                     }
 
                     if (!int.TryParse(commandLineParts[0], out int x) || x < 0)
                     {
-                        throw new ArgumentException("input", $"Cannot parse positive integer from {commandLineParts[0]} on line {i}.");
+                        throw new ArgumentException($"Cannot parse positive integer from {commandLineParts[0]} on line {i}.", "input");
                     }
 
                     if (!int.TryParse(commandLineParts[1], out int y) || y < 0)
                     {
-                        throw new ArgumentException("input", $"Cannot parse positive integer from {commandLineParts[1]} on line {i}.");
+                        throw new ArgumentException($"Cannot parse positive integer from {commandLineParts[1]} on line {i}.", "input");
                     }
 
                     if (commandLineParts.Count() == 2)
                     {
                         if (i != 0)
                         {
-                            throw new ArgumentException("input", $"Plateau initialization should be on the first line on line {i}.");
+                            throw new ArgumentException($"Plateau initialization should be on the first line on line {i}.", "input");
                         }
 
                         Position position = new Position(x, y);
@@ -69,7 +69,7 @@ namespace Nasa.MarsRoboticRover.BLL
                     {
                         if (commandLineParts[2].Length != 1 || !"NESW".Contains(commandLineParts[2]))
                         {
-                            throw new ArgumentException("input", $"Rover initialization line should have either N, E, S, or W on the last part on line {i}.");
+                            throw new ArgumentException($"Rover initialization line should have either N, E, S, or W on the last part on line {i}.", "input");
                         }
 
                         CompassDirection compassDirection = GetCompassDirection(commandLineParts);
@@ -128,7 +128,7 @@ namespace Nasa.MarsRoboticRover.BLL
                         break;
                     }
                 default:
-                    throw new ArgumentException("input", $"Rover rotation/move line should have either L, R, or M characters on line {index}.");
+                    throw new ArgumentException($"Rover rotation/move line should have either L, R, or M characters on line {index}.", "input");
             }
         }
 
