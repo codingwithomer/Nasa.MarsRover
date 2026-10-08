@@ -10,7 +10,7 @@ namespace Nasa.MarsRoboticRover.Test.Architecture
     public class DependencyRuleTests
     {
         private static readonly Assembly DomainAssembly = typeof(Position).Assembly;
-        private static readonly Assembly ApplicationAssembly = typeof(CommandCenter).Assembly;
+        private static readonly Assembly ApplicationAssembly = typeof(MissionExecutor).Assembly;
         private static readonly Assembly ConsoleAssembly = typeof(MissionRunner).Assembly;
 
         private static string[] ReferencedProjects(Assembly assembly)

@@ -15,7 +15,7 @@ namespace Nasa.MarsRoboticRover
             services.AddSingleton<ILineParser, RoverLineParser>();
             services.AddSingleton<ILineParser, InstructionLineParser>();
             services.AddSingleton<IParser, CommandParser>();
-            services.AddSingleton<ICommandCenter, CommandCenter>();
+            services.AddSingleton<IMissionExecutor, MissionExecutor>();
             services.AddSingleton<MissionRunner>();
 
             return services;

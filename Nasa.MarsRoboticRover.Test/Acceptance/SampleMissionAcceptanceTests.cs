@@ -14,10 +14,10 @@ namespace Nasa.MarsRoboticRover.Test.Acceptance
         public void CommandParser_Should_GenerateCommandsAndOutput()
         {
             IParser commandParser = TestParsers.CreateDefault();
-            ICommandCenter commandCenter = new CommandCenter();
+            IMissionExecutor missionExecutor = new MissionExecutor();
 
-            List<ICommand> commands = commandParser.Parse(new SampleMissionInputProvider().GetInput());
-            string output = commandCenter.ExecuteCommands(commands);
+            IReadOnlyList<ICommand> commands = commandParser.Parse(new SampleMissionInputProvider().GetInput());
+            string output = missionExecutor.Execute(commands);
 
             string expectedString = string.Join(Environment.NewLine, "1 3 N", "5 1 E", "");
             Assert.Equal(expectedString, output);

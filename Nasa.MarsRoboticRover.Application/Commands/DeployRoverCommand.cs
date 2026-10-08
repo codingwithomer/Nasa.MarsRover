@@ -16,7 +16,7 @@ namespace Nasa.MarsRoboticRover.Application.Commands
 
         public void Execute(MissionContext context)
         {
-            context.SetCurrentRover(context.Plateau.Deploy(_position, _compassDirection));
+            context.DeployRover(_position, _compassDirection);
         }
     }
 }

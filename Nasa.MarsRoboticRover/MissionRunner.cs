@@ -6,19 +6,19 @@ namespace Nasa.MarsRoboticRover
     {
         private readonly IMissionInputProvider _inputProvider;
         private readonly IParser _parser;
-        private readonly ICommandCenter _commandCenter;
+        private readonly IMissionExecutor _missionExecutor;
 
-        public MissionRunner(IMissionInputProvider inputProvider, IParser parser, ICommandCenter commandCenter)
+        public MissionRunner(IMissionInputProvider inputProvider, IParser parser, IMissionExecutor missionExecutor)
         {
             _inputProvider = inputProvider;
             _parser = parser;
-            _commandCenter = commandCenter;
+            _missionExecutor = missionExecutor;
         }
 
         public string Run()
         {
             string input = _inputProvider.GetInput();
-            string results = _commandCenter.ExecuteCommands(_parser.Parse(input));
+            string results = _missionExecutor.Execute(_parser.Parse(input));
 
             return MissionReportFormatter.Format(input, results);
         }

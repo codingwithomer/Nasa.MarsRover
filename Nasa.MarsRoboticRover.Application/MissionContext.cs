@@ -4,10 +4,9 @@ using System.Collections.Generic;
 
 namespace Nasa.MarsRoboticRover.Application
 {
-    /// <summary>The state of one mission run: the plateau, the rover being driven and the report so far.</summary>
+    /// <summary>The state of one mission run: the plateau and the rover currently being driven.</summary>
     public class MissionContext
     {
-        private readonly List<string> _reportLines = new List<string>();
         private Plateau _plateau;
         private MarsRover _currentRover;
 
@@ -15,10 +14,13 @@ namespace Nasa.MarsRoboticRover.Application
 
         public MarsRover CurrentRover => _currentRover ?? throw new InvalidOperationException("No rover has been deployed yet.");
 
-        public IReadOnlyList<string> ReportLines => _reportLines;
+        /// <summary>Every rover deployed so far, in deployment order; empty until a plateau exists.</summary>
+        public IReadOnlyList<MarsRover> Rovers => _plateau?.Rovers ?? Array.Empty<MarsRover>();
 
         public void DefinePlateau(Plateau plateau)
         {
+            ArgumentNullException.ThrowIfNull(plateau);
+
             if (_plateau != null)
             {
                 throw new InvalidOperationException("The plateau has already been defined.");
@@ -27,14 +29,9 @@ namespace Nasa.MarsRoboticRover.Application
             _plateau = plateau;
         }
 
-        public void SetCurrentRover(MarsRover rover)
+        public void DeployRover(Position position, CompassDirection compassDirection)
         {
-            _currentRover = rover;
-        }
-
-        public void AddReportLine(string line)
-        {
-            _reportLines.Add(line);
+            _currentRover = Plateau.Deploy(position, compassDirection);
         }
     }
 }

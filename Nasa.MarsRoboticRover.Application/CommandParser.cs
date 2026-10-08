@@ -1,5 +1,4 @@
-﻿using Nasa.MarsRoboticRover.Application.Commands;
-using Nasa.MarsRoboticRover.Application.Interfaces;
+﻿using Nasa.MarsRoboticRover.Application.Interfaces;
 using Nasa.MarsRoboticRover.Application.Parsing;
 using System;
 using System.Collections.Generic;
@@ -17,10 +16,17 @@ namespace Nasa.MarsRoboticRover.Application
 
         public CommandParser(IEnumerable<ILineParser> lineParsers)
         {
+            ArgumentNullException.ThrowIfNull(lineParsers);
+
             _lineParsers = lineParsers.ToList();
+
+            if (_lineParsers.Count == 0)
+            {
+                throw new ArgumentException("At least one line parser is required.", nameof(lineParsers));
+            }
         }
 
-        public List<ICommand> Parse(string commandInput)
+        public IReadOnlyList<ICommand> Parse(string commandInput)
         {
             if (string.IsNullOrWhiteSpace(commandInput))
             {
@@ -37,20 +43,10 @@ namespace Nasa.MarsRoboticRover.Application
 
                 ValidateOrder(lineParser.Kind, line, isFirstLine, roverSeen);
 
-                if (lineParser.Kind == LineKind.Rover && roverSeen)
-                {
-                    commands.Add(new PrintPositionAndCompassDirectionCommand());
-                }
-
                 commands.AddRange(lineParser.Parse(line));
 
                 roverSeen |= lineParser.Kind == LineKind.Rover;
                 isFirstLine = false;
-            }
-
-            if (roverSeen)
-            {
-                commands.Add(new PrintPositionAndCompassDirectionCommand());
             }
 
             return commands;

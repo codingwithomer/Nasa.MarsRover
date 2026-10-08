@@ -15,24 +15,24 @@ namespace Nasa.MarsRoboticRover.Test.Application
         private readonly CommandParser _parser = TestParsers.CreateDefault();
 
         [Fact]
-        public void Parse_TwoRovers_ProducesCommandsInExecutionOrderWithOnePrintPerRover()
+        public void Parse_TwoRovers_ProducesCommandsInExecutionOrder()
         {
-            List<ICommand> commands = _parser.Parse("5 5\n1 2 N\nLM\n3 3 E\nR");
+            IReadOnlyList<ICommand> commands = _parser.Parse("5 5\n1 2 N\nLM\n3 3 E\nR");
 
             Type[] types = commands.Select(command => command.GetType()).ToArray();
 
             Assert.Equal(new[]
             {
                 typeof(DefinePlateauCommand),
-                typeof(DeployRoverCommand), typeof(RoverRotatorCommand), typeof(MoveRoverCommand), typeof(PrintPositionAndCompassDirectionCommand),
-                typeof(DeployRoverCommand), typeof(RoverRotatorCommand), typeof(PrintPositionAndCompassDirectionCommand)
+                typeof(DeployRoverCommand), typeof(RoverRotatorCommand), typeof(MoveRoverCommand),
+                typeof(DeployRoverCommand), typeof(RoverRotatorCommand)
             }, types);
         }
 
         [Fact]
-        public void Parse_PlateauOnly_ProducesNoPrintCommand()
+        public void Parse_PlateauOnly_ProducesOnlyThePlateauCommand()
         {
-            List<ICommand> commands = _parser.Parse("5 5");
+            IReadOnlyList<ICommand> commands = _parser.Parse("5 5");
 
             Assert.IsType<DefinePlateauCommand>(Assert.Single(commands));
         }
@@ -40,9 +40,9 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [Fact]
         public void Parse_ToleratesBlankLinesExtraSpacesAndCrLf()
         {
-            List<ICommand> commands = _parser.Parse("  5   5 \r\n\r\n1  2   N\r\n  M  \r\n");
+            IReadOnlyList<ICommand> commands = _parser.Parse("  5   5 \r\n\r\n1  2   N\r\n  M  \r\n");
 
-            Assert.Equal(4, commands.Count);
+            Assert.Equal(3, commands.Count);
         }
 
         [Theory]
@@ -71,8 +71,8 @@ namespace Nasa.MarsRoboticRover.Test.Application
                 new PlateauLineParser(), new RoverLineParser(), new InstructionLineParser(instructions)
             });
 
-            ICommandCenter commandCenter = new CommandCenter();
-            string report = commandCenter.ExecuteCommands(parser.Parse("5 5\n1 2 N\nB"));
+            IMissionExecutor missionExecutor = new MissionExecutor();
+            string report = missionExecutor.Execute(parser.Parse("5 5\n1 2 N\nB"));
 
             Assert.Equal("1 2 E" + Environment.NewLine, report);
         }

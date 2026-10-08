@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Nasa.MarsRoboticRover.Application.Interfaces
 {
     public interface IParser
     {
-        List<ICommand> Parse(string commandInput);
+        IReadOnlyList<ICommand> Parse(string commandInput);
     }
 }
