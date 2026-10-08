@@ -1,14 +1,15 @@
 ﻿using Nasa.MarsRoboticRover.Application;
 using Nasa.MarsRoboticRover.Application.Interfaces;
 using Nasa.MarsRoboticRover.Domain;
+using Nasa.MarsRoboticRover.Test.Application;
 using Nasa.MarsRoboticRover.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Nasa.MarsRoboticRover.Test
+namespace Nasa.MarsRoboticRover.Test.Acceptance
 {
-    public class MarsRoverTest
+    public class SampleMissionAcceptanceTests
     {
         [Fact]
         public void CommandParser_Should_GenerateCommandsAndOutput()

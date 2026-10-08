@@ -5,7 +5,7 @@ using Nasa.MarsRoboticRover.Domain;
 using System;
 using Xunit;
 
-namespace Nasa.MarsRoboticRover.Test
+namespace Nasa.MarsRoboticRover.Test.Application
 {
     public class CommandCenterTests
     {

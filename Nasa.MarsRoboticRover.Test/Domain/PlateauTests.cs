@@ -3,7 +3,7 @@ using Nasa.MarsRoboticRover.Domain.Interfaces;
 using System;
 using Xunit;
 
-namespace Nasa.MarsRoboticRover.Test
+namespace Nasa.MarsRoboticRover.Test.Domain
 {
     public class PlateauTests
     {

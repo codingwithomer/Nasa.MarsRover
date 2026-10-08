@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using System;
 
-namespace Nasa.MarsRoboticRover.Test
+namespace Nasa.MarsRoboticRover.Test.Presentation
 {
     public class MissionReportFormatterTests
     {

@@ -1,7 +1,7 @@
 ﻿using Nasa.MarsRoboticRover.Application;
 using Nasa.MarsRoboticRover.Application.Parsing;
 
-namespace Nasa.MarsRoboticRover.Test
+namespace Nasa.MarsRoboticRover.Test.Application
 {
     internal static class TestParsers
     {
