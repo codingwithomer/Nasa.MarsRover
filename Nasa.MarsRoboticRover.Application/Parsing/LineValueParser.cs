@@ -8,7 +8,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
     {
         public static bool StartsWithDigit(InputLine line)
         {
-            return char.IsDigit(line.Text[0]);
+            return char.IsAsciiDigit(line.Text[0]);
         }
 
         public static Position ParsePosition(InputLine line, string[] parts)

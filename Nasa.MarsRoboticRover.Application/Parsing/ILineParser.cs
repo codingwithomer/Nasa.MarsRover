@@ -10,6 +10,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
 
         bool CanParse(InputLine line);
 
-        IEnumerable<ICommand> Parse(InputLine line);
+        /// <summary>Parses eagerly: content errors surface here, before the coordinator checks the line order.</summary>
+        IReadOnlyList<ICommand> Parse(InputLine line);
     }
 }

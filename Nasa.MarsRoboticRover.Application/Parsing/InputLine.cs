@@ -6,7 +6,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
     /// <summary>A non-blank, trimmed input line together with its 1-based line number in the original text.</summary>
     public readonly record struct InputLine(int Number, string Text)
     {
-        public string[] Parts => Text.Split(' ', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries);
+        public string[] Parts => Text.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries);
 
         public static List<InputLine> Split(string input)
         {

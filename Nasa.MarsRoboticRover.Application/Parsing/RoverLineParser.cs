@@ -14,13 +14,16 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
             return LineValueParser.StartsWithDigit(line) && line.Parts.Length == 3;
         }
 
-        public IEnumerable<ICommand> Parse(InputLine line)
+        public IReadOnlyList<ICommand> Parse(InputLine line)
         {
             string[] parts = line.Parts;
 
-            yield return new DeployRoverCommand(
-                LineValueParser.ParsePosition(line, parts),
-                LineValueParser.ParseCompassDirection(line, parts[2]));
+            return new ICommand[]
+            {
+                new DeployRoverCommand(
+                    LineValueParser.ParsePosition(line, parts),
+                    LineValueParser.ParseCompassDirection(line, parts[2]))
+            };
         }
     }
 }

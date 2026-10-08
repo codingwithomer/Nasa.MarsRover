@@ -41,9 +41,12 @@ namespace Nasa.MarsRoboticRover.Application
             {
                 ILineParser lineParser = FindParser(line);
 
+                // Content first, order second: "-1 2 N" is a bad instruction, not a misplaced one.
+                IReadOnlyList<ICommand> lineCommands = lineParser.Parse(line);
+
                 ValidateOrder(lineParser.Kind, line, isFirstLine, roverSeen);
 
-                commands.AddRange(lineParser.Parse(line));
+                commands.AddRange(lineCommands);
 
                 roverSeen |= lineParser.Kind == LineKind.Rover;
                 isFirstLine = false;

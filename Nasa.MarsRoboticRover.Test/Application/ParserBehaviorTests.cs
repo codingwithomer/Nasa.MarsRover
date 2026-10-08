@@ -62,19 +62,23 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [Fact]
         public void Parse_SupportsNewInstructionLettersWithoutChangingTheParser()
         {
-            Dictionary<char, Func<ICommand>> instructions = new Dictionary<char, Func<ICommand>>(InstructionLineParser.DefaultInstructions)
-            {
-                ['B'] = () => new RoverRotatorCommand(Rotation.Right)
-            };
+            InstructionSet instructions = InstructionSet.CreateDefault().With('B', new RoverRotatorCommand(Rotation.Right));
             CommandParser parser = new CommandParser(new ILineParser[]
             {
                 new PlateauLineParser(), new RoverLineParser(), new InstructionLineParser(instructions)
             });
 
-            IMissionExecutor missionExecutor = new MissionExecutor();
-            string report = missionExecutor.Execute(parser.Parse("5 5\n1 2 N\nB"));
+            string report = new MissionExecutor().Execute(parser.Parse("5 5\n1 2 N\nB"));
 
             Assert.Equal("1 2 E" + Environment.NewLine, report);
+        }
+
+        [Fact]
+        public void Parse_AcceptsTabsAsFieldSeparators()
+        {
+            IReadOnlyList<ICommand> commands = _parser.Parse("5\t5\n1\t2\tN");
+
+            Assert.Equal(2, commands.Count);
         }
     }
 }

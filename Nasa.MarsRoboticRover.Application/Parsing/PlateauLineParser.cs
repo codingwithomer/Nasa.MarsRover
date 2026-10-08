@@ -14,9 +14,9 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
             return LineValueParser.StartsWithDigit(line) && line.Parts.Length == 2;
         }
 
-        public IEnumerable<ICommand> Parse(InputLine line)
+        public IReadOnlyList<ICommand> Parse(InputLine line)
         {
-            yield return new DefinePlateauCommand(LineValueParser.ParsePosition(line, line.Parts));
+            return new ICommand[] { new DefinePlateauCommand(LineValueParser.ParsePosition(line, line.Parts)) };
         }
     }
 }

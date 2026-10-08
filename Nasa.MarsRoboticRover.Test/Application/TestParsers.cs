@@ -11,7 +11,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
             {
                 new PlateauLineParser(),
                 new RoverLineParser(),
-                new InstructionLineParser()
+                new InstructionLineParser(InstructionSet.CreateDefault())
             });
         }
     }

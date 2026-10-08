@@ -11,6 +11,7 @@ namespace Nasa.MarsRoboticRover
         {
             // All services are stateless: mission state lives in a MissionContext created per run.
             services.AddSingleton<IMissionInputProvider, SampleMissionInputProvider>();
+            services.AddSingleton<IInstructionSet>(_ => InstructionSet.CreateDefault());
             services.AddSingleton<ILineParser, PlateauLineParser>();
             services.AddSingleton<ILineParser, RoverLineParser>();
             services.AddSingleton<ILineParser, InstructionLineParser>();
