@@ -25,16 +25,29 @@ namespace Nasa.MarsRoboticRover
                 return InvalidMission;
             }
 
+            IMissionInputProvider inputProvider = SelectInputProvider(args, input, inputRedirected);
+
             using ServiceProvider serviceProvider = new ServiceCollection()
                 .AddMarsRover()
-                .AddSingleton(SelectInputProvider(args, input, inputRedirected))
+                .AddSingleton(inputProvider)
                 .BuildServiceProvider();
 
             MissionRunner runner = serviceProvider.GetRequiredService<MissionRunner>();
 
             try
             {
-                output.WriteLine(runner.Run());
+                string report = runner.Run();
+
+                if (inputProvider is SampleMissionInputProvider)
+                {
+                    // Only the built-in sample is presented as an example; real missions print just the report.
+                    output.WriteLine(MissionReportFormatter.Format(inputProvider.GetInput(), report));
+                }
+                else
+                {
+                    output.Write(report);
+                }
+
                 return Success;
             }
             catch (InvalidMissionException ex)

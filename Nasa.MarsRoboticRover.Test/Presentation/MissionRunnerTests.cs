@@ -12,16 +12,13 @@ namespace Nasa.MarsRoboticRover.Test.Presentation
         }
 
         [Fact]
-        public void Run_WithDefaultRegistrations_ProducesTheSampleReport()
+        public void Run_WithDefaultRegistrations_ProducesTheReportWithoutDecoration()
         {
             using ServiceProvider provider = BuildProvider();
 
             string report = provider.GetRequiredService<MissionRunner>().Run();
 
-            string expected = string.Join(Environment.NewLine,
-                "Test Input:", "5 5", "1 2 N", "LMLMLMLMM", "3 3 E", "MMRMMRMRRM", "", "",
-                "Expected Output:", "1 3 N", "5 1 E", "");
-            Assert.Equal(expected, report);
+            Assert.Equal(string.Join(Environment.NewLine, "1 3 N", "5 1 E", ""), report);
         }
 
         [Fact]

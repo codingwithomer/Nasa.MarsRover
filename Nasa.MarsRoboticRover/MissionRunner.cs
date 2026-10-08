@@ -15,12 +15,10 @@ namespace Nasa.MarsRoboticRover
             _missionExecutor = missionExecutor;
         }
 
+        /// <summary>Reads, parses and executes the mission and returns the report: one line per rover.</summary>
         public string Run()
         {
-            string input = _inputProvider.GetInput();
-            string results = _missionExecutor.Execute(_parser.Parse(input));
-
-            return MissionReportFormatter.Format(input, results);
+            return _missionExecutor.Execute(_parser.Parse(_inputProvider.GetInput()));
         }
     }
 }

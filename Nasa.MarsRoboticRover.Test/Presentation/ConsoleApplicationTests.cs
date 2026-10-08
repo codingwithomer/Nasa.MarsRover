@@ -15,27 +15,57 @@ namespace Nasa.MarsRoboticRover.Test.Presentation
         }
 
         [Fact]
-        public void Run_WithoutArgumentsAndInteractiveInput_RunsTheSampleMission()
+        public void Run_WithoutArgumentsAndInteractiveInput_RunsTheDecoratedSampleMission()
         {
             int exitCode = Run(Array.Empty<string>());
 
+            string expected = string.Join(Environment.NewLine,
+                "Test Input:", "5 5", "1 2 N", "LMLMLMLMM", "3 3 E", "MMRMMRMRRM", "", "",
+                "Expected Output:", "1 3 N", "5 1 E", "", "");
             Assert.Equal(ConsoleApplication.Success, exitCode);
-            Assert.Contains("1 3 N", _output.ToString());
-            Assert.Contains("5 1 E", _output.ToString());
+            Assert.Equal(expected, _output.ToString());
             Assert.Equal(string.Empty, _error.ToString());
         }
 
         [Fact]
-        public void Run_WithRedirectedInput_ReadsTheMissionFromStandardInput()
+        public void Run_WithRedirectedInput_PrintsOnlyTheReport()
         {
             int exitCode = Run(Array.Empty<string>(), "3 3\n0 0 N\nMMR\n", inputRedirected: true);
 
             Assert.Equal(ConsoleApplication.Success, exitCode);
-            Assert.Contains("Expected Output:" + Environment.NewLine + "0 2 E" + Environment.NewLine, _output.ToString());
+            Assert.Equal("0 2 E" + Environment.NewLine, _output.ToString());
         }
 
         [Fact]
-        public void Run_WithAFilePath_ReadsTheMissionFromThatFile()
+        public void Run_WithRedirectedInputStartingWithAByteOrderMark_ReadsTheMission()
+        {
+            int exitCode = Run(Array.Empty<string>(), "\uFEFF3 3\n0 0 N\nMMR\n", inputRedirected: true);
+
+            Assert.Equal(ConsoleApplication.Success, exitCode);
+            Assert.Equal("0 2 E" + Environment.NewLine, _output.ToString());
+        }
+
+        [Fact]
+        public void Run_WithEmptyRedirectedInput_FailsInsteadOfRunningTheSample()
+        {
+            int exitCode = Run(Array.Empty<string>(), string.Empty, inputRedirected: true);
+
+            Assert.Equal(ConsoleApplication.InvalidMission, exitCode);
+            Assert.Equal("Invalid mission: Empty input." + Environment.NewLine, _error.ToString());
+            Assert.Equal(string.Empty, _output.ToString());
+        }
+
+        [Fact]
+        public void Run_WithAPlateauOnlyMission_SucceedsWithAnEmptyReport()
+        {
+            int exitCode = Run(Array.Empty<string>(), "5 5\n", inputRedirected: true);
+
+            Assert.Equal(ConsoleApplication.Success, exitCode);
+            Assert.Equal(string.Empty, _output.ToString());
+        }
+
+        [Fact]
+        public void Run_WithAFilePath_PrintsOnlyTheReportOfThatFile()
         {
             string path = Path.GetTempFileName();
             try
@@ -45,7 +75,7 @@ namespace Nasa.MarsRoboticRover.Test.Presentation
                 int exitCode = Run(new[] { path });
 
                 Assert.Equal(ConsoleApplication.Success, exitCode);
-                Assert.Contains("3 1 E", _output.ToString());
+                Assert.Equal("3 1 E" + Environment.NewLine, _output.ToString());
             }
             finally
             {
