@@ -7,12 +7,12 @@ namespace Nasa.MarsRoboticRover.Entities
 {
     public class Plateau : ILocation
     {
-        private Position _maxPosition;
+        private Position? _maxPosition;
         private List<IRover> _marsRover;
 
         public void Initialize(Position position)
         {
-            if (_maxPosition != null)
+            if (_maxPosition.HasValue)
             {
                 throw new Exception("Location is already initialized.");
             }
@@ -23,7 +23,7 @@ namespace Nasa.MarsRoboticRover.Entities
 
         public bool IsPositionValid(Position position)
         {
-            return position.IsWithin(Position.Origin, _maxPosition);
+            return position.IsWithin(Position.Origin, _maxPosition.Value);
         }
 
         public bool IsPositionFree(Position position)
