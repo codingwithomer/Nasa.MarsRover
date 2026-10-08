@@ -52,30 +52,51 @@ Expected Output:
 5 1 E
 
 
-## Architecture
-
-Dependencies point inwards only (enforced by `DependencyRuleTests`):
+## Running
 
 ```
-Nasa.MarsRoboticRover              console app and composition root (DI wiring, report formatting)
-  -> Nasa.MarsRoboticRover.Application   use cases: parsing, commands, mission execution
-       -> Nasa.MarsRoboticRover.Domain   Plateau, MarsRover, Position, compass/rotation rules
+dotnet run --project Nasa.MarsRoboticRover                  # built-in sample mission (the example above)
+dotnet run --project Nasa.MarsRoboticRover -- mission.txt   # mission read from a file
+cat mission.txt | dotnet run --project Nasa.MarsRoboticRover # mission read from standard input
+```
+
+Exit codes: `0` success, `1` invalid mission or usage (message on stderr), `2` input could not be read.
+`dotnet test` runs the whole suite.
+
+## Architecture
+
+Dependencies point inwards only (enforced by `DependencyRuleTests`, on the project files and on the compiled assemblies):
+
+```
+Nasa.MarsRoboticRover              console host: composition root, input sources, report headers, exit codes
+  -> Nasa.MarsRoboticRover.Application   use cases: parsing, commands, MissionContext, MissionExecutor
+       -> Nasa.MarsRoboticRover.Domain   Plateau, MarsRover, Position, compass rules
 ```
 
 - **Domain** knows nothing about input, commands or output. `Plateau` is created with its size, enforces bounds and
   occupancy, and is the only way to deploy a `MarsRover`. Rovers depend on the narrow `ITerrain` interface.
-- **Application** turns text into commands (`CommandParser` + one `ILineParser` per line kind) and runs them against a
-  per-run `MissionContext` (`CommandCenter`). All services are stateless.
-- **Console** wires everything in `AddMarsRover()` and prints the report.
+- **Application** turns text into commands (`CommandParser` coordinating one `ILineParser` per line kind) and runs them
+  against a per-run `MissionContext` (`MissionExecutor`). The report is the final state of each rover on the plateau.
+  All services are stateless.
+- **Console** wires everything in `AddMarsRover()`, picks the input source and prints the report.
 
-Extending the system:
+Errors: parse errors are `ArgumentException`s that name the 1-based input line. In the domain, an argument that can never
+be valid (outside the plateau, unknown heading) is an `ArgumentOutOfRangeException`; a call that the current state forbids
+(occupied square, blocked move) is an `InvalidOperationException`.
 
-| To add...                    | Do this                                                                 |
-|------------------------------|-------------------------------------------------------------------------|
-| a new instruction letter     | add a `letter -> command` entry to the `InstructionLineParser` registry |
-| a new kind of input line     | implement `ILineParser` and register it                                 |
-| a different input source     | implement `IMissionInputProvider` (file, stdin, ...) and register it    |
-| a new rover/mission behavior | add an `ICommand`; it works on `MissionContext`                         |
+### Extending
 
-Patterns used, each where the problem asks for it: Command (`ICommand`), Strategy (`ILineParser`),
-Factory/registry (instruction letters), Dependency Injection (constructor injection, composition root).
+| To add...                  | Do this                                                                                          |
+|----------------------------|--------------------------------------------------------------------------------------------------|
+| a new instruction letter   | `InstructionSet.CreateDefault().With('X', command)`; nothing else changes                        |
+| a new rover behavior       | implement `ICommand` (it works on `MissionContext`)                                              |
+| a different input source   | implement `IMissionInputProvider` and register it                                                |
+| a new kind of input line   | implement `ILineParser`, add a `LineKind` value, register it, and extend `CommandParser.ValidateOrder` if the new kind has ordering rules |
+
+Adding an instruction letter or an input source is purely additive. A new *line kind* is not: the ordering rules
+(plateau first, instructions after a rover) live in `CommandParser`, so it has to learn about the new kind.
+
+### Patterns
+
+Command (`ICommand`), Strategy (`ILineParser`), a letter -> command registry (`IInstructionSet`) and constructor
+Dependency Injection with a single composition root. Nothing else is used on purpose: this is a small problem.
