@@ -32,14 +32,19 @@ namespace Nasa.MarsRoboticRover.Domain
 
         public IRover Deploy(Position position, CompassDirection compassDirection)
         {
+            if (!Enum.IsDefined(compassDirection))
+            {
+                throw new ArgumentOutOfRangeException(nameof(compassDirection), compassDirection, "Unknown compass direction.");
+            }
+
             if (!IsPositionValid(position))
             {
-                throw new ArgumentException($"{position} is not valid.", nameof(position));
+                throw new ArgumentOutOfRangeException(nameof(position), position, $"{position} is outside the plateau.");
             }
 
             if (!IsPositionFree(position))
             {
-                throw new ArgumentException($"{position} is not free.", nameof(position));
+                throw new InvalidOperationException($"{position} is already occupied by another rover.");
             }
 
             MarsRover rover = new MarsRover(position, compassDirection, this);

@@ -36,9 +36,19 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         {
             IPlateau plateau = new Plateau(new Position(5, 5));
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => plateau.Deploy(new Position(6, 0), CompassDirection.North));
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => plateau.Deploy(new Position(6, 0), CompassDirection.North));
 
             Assert.Equal("position", ex.ParamName);
+        }
+
+        [Fact]
+        public void Deploy_WithUndefinedHeading_Throws()
+        {
+            IPlateau plateau = new Plateau(new Position(5, 5));
+
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => plateau.Deploy(new Position(1, 1), (CompassDirection)99));
+
+            Assert.Equal("compassDirection", ex.ParamName);
         }
 
         [Fact]

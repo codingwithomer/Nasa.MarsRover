@@ -13,7 +13,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
             IPlateau plateau = new Plateau(new Position(5, 5));
             plateau.Deploy(new Position(1, 1), CompassDirection.North);
 
-            Assert.Throws<ArgumentException>(() => plateau.Deploy(new Position(1, 1), CompassDirection.East));
+            Assert.Throws<InvalidOperationException>(() => plateau.Deploy(new Position(1, 1), CompassDirection.East));
         }
 
         [Fact]
