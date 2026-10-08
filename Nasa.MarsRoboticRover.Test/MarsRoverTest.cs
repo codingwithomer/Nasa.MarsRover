@@ -1,7 +1,7 @@
-﻿using Nasa.MarsRoboticRover.BLL;
-using Nasa.MarsRoboticRover.BLL.Interfaces;
-using Nasa.MarsRoboticRover.Entities;
-using Nasa.MarsRoboticRover.Entities.Interfaces;
+﻿using Nasa.MarsRoboticRover.Application;
+using Nasa.MarsRoboticRover.Application.Interfaces;
+using Nasa.MarsRoboticRover.Domain;
+using Nasa.MarsRoboticRover.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using Xunit;

@@ -1,5 +1,5 @@
-﻿using Nasa.MarsRoboticRover.BLL;
-using Nasa.MarsRoboticRover.BLL.Parsing;
+﻿using Nasa.MarsRoboticRover.Application;
+using Nasa.MarsRoboticRover.Application.Parsing;
 
 namespace Nasa.MarsRoboticRover.Test
 {

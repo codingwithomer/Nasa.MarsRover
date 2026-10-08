@@ -1,5 +1,5 @@
-﻿using Nasa.MarsRoboticRover.BLL;
-using Nasa.MarsRoboticRover.Entities;
+﻿using Nasa.MarsRoboticRover.Application;
+using Nasa.MarsRoboticRover.Domain;
 using System;
 using Xunit;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Nasa.MarsRoboticRover.BLL;
-using Nasa.MarsRoboticRover.BLL.Interfaces;
-using Nasa.MarsRoboticRover.BLL.Parsing;
+using Nasa.MarsRoboticRover.Application;
+using Nasa.MarsRoboticRover.Application.Interfaces;
+using Nasa.MarsRoboticRover.Application.Parsing;
 
 namespace Nasa.MarsRoboticRover
 {

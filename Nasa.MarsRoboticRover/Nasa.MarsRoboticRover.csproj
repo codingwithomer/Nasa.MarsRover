@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nasa.MarsRoboticRover.BLL\Nasa.MarsRoboticRover.BLL.csproj" />
-    <ProjectReference Include="..\Nasa.MarsRoboticRover.Entities\Nasa.MarsRoboticRover.Entities.csproj" />
+    <ProjectReference Include="..\Nasa.MarsRoboticRover.Application\Nasa.MarsRoboticRover.Application.csproj" />
+    <ProjectReference Include="..\Nasa.MarsRoboticRover.Domain\Nasa.MarsRoboticRover.Domain.csproj" />
   </ItemGroup>
 
 </Project>

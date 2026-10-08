@@ -1,4 +1,4 @@
-﻿using Nasa.MarsRoboticRover.BLL.Interfaces;
+﻿using Nasa.MarsRoboticRover.Application.Interfaces;
 
 namespace Nasa.MarsRoboticRover
 {

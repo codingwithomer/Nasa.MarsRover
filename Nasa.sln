@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nasa.MarsRoboticRover", "Nasa.MarsRoboticRover\Nasa.MarsRoboticRover.csproj", "{2F8E6C57-30B2-4E51-B89B-93446E4102F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.BLL", "Nasa.MarsRoboticRover.BLL\Nasa.MarsRoboticRover.BLL.csproj", "{3DC6022B-FAA2-46C6-85F5-4F5CC99C9DCB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.Application", "Nasa.MarsRoboticRover.Application\Nasa.MarsRoboticRover.Application.csproj", "{3DC6022B-FAA2-46C6-85F5-4F5CC99C9DCB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.Test", "Nasa.MarsRoboticRover.Test\Nasa.MarsRoboticRover.Test.csproj", "{E6106B74-E5C3-45C8-855C-33FA88904663}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.Entities", "Nasa.MarsRoboticRover.Entities\Nasa.MarsRoboticRover.Entities.csproj", "{7593F3DD-8BA2-4DEA-BD95-AD3807F17F3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.MarsRoboticRover.Domain", "Nasa.MarsRoboticRover.Domain\Nasa.MarsRoboticRover.Domain.csproj", "{7593F3DD-8BA2-4DEA-BD95-AD3807F17F3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

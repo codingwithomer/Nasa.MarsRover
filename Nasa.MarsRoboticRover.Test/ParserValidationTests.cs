@@ -1,4 +1,4 @@
-﻿using Nasa.MarsRoboticRover.BLL;
+﻿using Nasa.MarsRoboticRover.Application;
 using System;
 using Xunit;
 
