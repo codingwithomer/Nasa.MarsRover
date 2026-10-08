@@ -1,6 +1,6 @@
 ﻿using Nasa.MarsRoboticRover.BLL.Interfaces;
 using Nasa.MarsRoboticRover.Entities;
-using Nasa.MarsRoboticRover.Entities.Commands;
+using Nasa.MarsRoboticRover.BLL.Commands;
 using Nasa.MarsRoboticRover.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
