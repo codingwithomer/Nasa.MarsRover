@@ -24,8 +24,8 @@ namespace Nasa.MarsRoboticRover.Test.Application
             Assert.Equal(new[]
             {
                 typeof(DefinePlateauCommand),
-                typeof(DeployRoverCommand), typeof(RoverRotatorCommand), typeof(MoveRoverCommand),
-                typeof(DeployRoverCommand), typeof(RoverRotatorCommand)
+                typeof(DeployRoverCommand), typeof(RotateRoverCommand), typeof(MoveRoverCommand),
+                typeof(DeployRoverCommand), typeof(RotateRoverCommand)
             }, types);
         }
 
@@ -183,7 +183,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [Fact]
         public void Parse_SupportsNewInstructionLettersWithoutChangingTheParser()
         {
-            InstructionSet instructions = InstructionSet.CreateDefault().With('B', new RoverRotatorCommand(Rotation.Right));
+            InstructionSet instructions = InstructionSet.CreateDefault().With('B', new RotateRoverCommand(Rotation.Right));
             CommandParser parser = new CommandParser(new ILineParser[]
             {
                 new PlateauLineParser(), new RoverLineParser(), new InstructionLineParser(instructions)
@@ -200,6 +200,25 @@ namespace Nasa.MarsRoboticRover.Test.Application
             IReadOnlyList<ICommand> commands = _parser.Parse("5\t5\n1\t2\tN\nM");
 
             Assert.Equal(3, commands.Count);
+        }
+
+        [Fact]
+        public void With_ADuplicateLetter_ExplainsWhichLetterIsAlreadyDefined()
+        {
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => InstructionSet.CreateDefault().With('L', new MoveRoverCommand()));
+
+            Assert.Contains("letter 'L' is already defined", ex.Message);
+        }
+
+        [Fact]
+        public void With_ANewLetter_LeavesTheOriginalSetUntouched()
+        {
+            InstructionSet original = InstructionSet.CreateDefault();
+
+            InstructionSet extended = original.With('B', new MoveRoverCommand());
+
+            Assert.False(original.TryGetCommand('B', out _));
+            Assert.True(extended.TryGetCommand('B', out _));
         }
     }
 }

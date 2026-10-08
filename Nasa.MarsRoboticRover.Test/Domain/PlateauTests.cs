@@ -61,5 +61,18 @@ namespace Nasa.MarsRoboticRover.Test.Domain
 
             Assert.False(plateau.IsPositionFree(new Position(2, 2)));
         }
+
+        [Fact]
+        public void Rovers_IsAReadOnlyViewThatFollowsLaterDeployments()
+        {
+            Plateau plateau = new Plateau(new Position(5, 5));
+            System.Collections.Generic.IReadOnlyList<MarsRover> view = plateau.Rovers;
+
+            plateau.Deploy(new Position(1, 1), CompassDirection.North);
+
+            Assert.Single(view);
+            Assert.IsNotType<System.Collections.Generic.List<MarsRover>>(view);
+            Assert.Throws<NotSupportedException>(() => ((System.Collections.Generic.IList<MarsRover>)view).Clear());
+        }
     }
 }

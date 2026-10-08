@@ -3,11 +3,11 @@ using Nasa.MarsRoboticRover.Domain;
 
 namespace Nasa.MarsRoboticRover.Application.Commands
 {
-    public class RoverRotatorCommand : ICommand
+    internal class RotateRoverCommand : ICommand
     {
         private readonly Rotation _rotation;
 
-        public RoverRotatorCommand(Rotation rotation)
+        public RotateRoverCommand(Rotation rotation)
         {
             _rotation = rotation;
         }

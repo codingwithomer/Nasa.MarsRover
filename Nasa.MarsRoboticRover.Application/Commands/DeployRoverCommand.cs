@@ -3,7 +3,7 @@ using Nasa.MarsRoboticRover.Domain;
 
 namespace Nasa.MarsRoboticRover.Application.Commands
 {
-    public class DeployRoverCommand : ICommand
+    internal class DeployRoverCommand : ICommand
     {
         private readonly Position _position;
         private readonly CompassDirection _compassDirection;

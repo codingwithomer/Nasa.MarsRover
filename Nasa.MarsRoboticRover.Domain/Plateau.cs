@@ -8,6 +8,7 @@ namespace Nasa.MarsRoboticRover.Domain
     public class Plateau : ITerrain
     {
         private readonly List<MarsRover> _rovers = new List<MarsRover>();
+        private readonly IReadOnlyList<MarsRover> _readOnlyRovers;
         private readonly Position _upperRight;
 
         public Plateau(Position upperRight)
@@ -18,9 +19,11 @@ namespace Nasa.MarsRoboticRover.Domain
             }
 
             _upperRight = upperRight;
+            _readOnlyRovers = _rovers.AsReadOnly();
         }
 
-        public IReadOnlyList<MarsRover> Rovers => _rovers;
+        /// <summary>The deployed rovers in deployment order; a read-only view that follows later deployments.</summary>
+        public IReadOnlyList<MarsRover> Rovers => _readOnlyRovers;
 
         public bool IsPositionValid(Position position)
         {

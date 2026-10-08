@@ -19,7 +19,17 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
         {
             ArgumentNullException.ThrowIfNull(commands);
 
-            _commands = commands.ToDictionary(pair => pair.Key, pair => pair.Value);
+            Dictionary<char, ICommand> table = new Dictionary<char, ICommand>();
+
+            foreach (KeyValuePair<char, ICommand> pair in commands)
+            {
+                if (!table.TryAdd(pair.Key, pair.Value))
+                {
+                    throw new ArgumentException($"letter '{pair.Key}' is already defined", nameof(commands));
+                }
+            }
+
+            _commands = table;
         }
 
         public IReadOnlyCollection<char> Letters => _commands.Keys.OrderBy(letter => letter).ToList();
@@ -28,8 +38,8 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
         {
             return new InstructionSet(new Dictionary<char, ICommand>
             {
-                ['L'] = new RoverRotatorCommand(Rotation.Left),
-                ['R'] = new RoverRotatorCommand(Rotation.Right),
+                ['L'] = new RotateRoverCommand(Rotation.Left),
+                ['R'] = new RotateRoverCommand(Rotation.Right),
                 ['M'] = new MoveRoverCommand()
             });
         }

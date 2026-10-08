@@ -3,7 +3,7 @@ using Nasa.MarsRoboticRover.Domain;
 
 namespace Nasa.MarsRoboticRover.Application.Commands
 {
-    public class DefinePlateauCommand : ICommand
+    internal class DefinePlateauCommand : ICommand
     {
         private readonly Position _upperRight;
 

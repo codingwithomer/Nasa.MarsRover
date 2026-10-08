@@ -11,7 +11,8 @@ namespace Nasa.MarsRoboticRover.Application
         private MarsRover _currentRover;
         private int _roverNumber;
 
-        public Plateau Plateau => _plateau ?? throw new InvalidOperationException("The plateau has not been defined yet.");
+        // Internal: commands act through CurrentRover and DeployRover, not on the live plateau.
+        internal Plateau Plateau => _plateau ?? throw new InvalidOperationException("The plateau has not been defined yet.");
 
         public MarsRover CurrentRover => _currentRover ?? throw new InvalidOperationException("No rover has been deployed yet.");
 

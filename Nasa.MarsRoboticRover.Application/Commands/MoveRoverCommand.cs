@@ -2,7 +2,7 @@
 
 namespace Nasa.MarsRoboticRover.Application.Commands
 {
-    public class MoveRoverCommand : ICommand
+    internal class MoveRoverCommand : ICommand
     {
         public void Execute(MissionContext context)
         {
