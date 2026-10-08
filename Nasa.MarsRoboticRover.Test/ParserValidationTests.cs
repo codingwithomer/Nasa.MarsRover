@@ -28,5 +28,16 @@ namespace Nasa.MarsRoboticRover.Test
 
             Assert.Equal("input", ex.ParamName);
         }
+
+        [Theory]
+        [InlineData("5 5\n1 2 N\nLMX", "line 3")]
+        [InlineData("5 5\n\n\n1 2 N\nLMX", "line 5")]
+        [InlineData("5 5\r\n1 2 X\r\nM", "line 2")]
+        public void Parse_ErrorMessage_ReportsOneBasedLineNumberOfTheOriginalInput(string input, string expectedLine)
+        {
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _parser.Parse(input));
+
+            Assert.Contains(expectedLine, ex.Message);
+        }
     }
 }
