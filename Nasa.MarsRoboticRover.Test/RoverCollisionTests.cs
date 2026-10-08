@@ -1,36 +1,29 @@
-using Nasa.MarsRoboticRover.Entities;
-using Xunit;
+﻿using Nasa.MarsRoboticRover.Entities;
+using Nasa.MarsRoboticRover.Entities.Interfaces;
 using System;
+using Xunit;
 
 namespace Nasa.MarsRoboticRover.Test
 {
     public class RoverCollisionTests
     {
-        private static Plateau CreatePlateau(int maxX = 5, int maxY = 5)
+        [Fact]
+        public void Deploy_OnOccupiedPosition_Throws()
         {
-            Plateau plateau = new Plateau();
-            plateau.Initialize(new Position(maxX, maxY));
-            return plateau;
+            IPlateau plateau = new Plateau(new Position(5, 5));
+            plateau.Deploy(new Position(1, 1), CompassDirection.North);
+
+            Assert.Throws<ArgumentException>(() => plateau.Deploy(new Position(1, 1), CompassDirection.East));
         }
 
         [Fact]
-        public void Rover_ShouldNotBeCreated_OnOccupiedPosition()
+        public void Move_OntoOccupiedPosition_ThrowsAndKeepsPosition()
         {
-            Plateau plateau = CreatePlateau();
-            new MarsRover(new Position(1, 1), CompassDirection.North, plateau);
+            IPlateau plateau = new Plateau(new Position(5, 5));
+            plateau.Deploy(new Position(1, 1), CompassDirection.North);
+            IRover mover = plateau.Deploy(new Position(1, 2), CompassDirection.South);
 
-            Assert.Throws<ArgumentException>(() =>
-                new MarsRover(new Position(1, 1), CompassDirection.East, plateau));
-        }
-
-        [Fact]
-        public void Rover_ShouldNotMove_OntoOccupiedPosition()
-        {
-            Plateau plateau = CreatePlateau();
-            new MarsRover(new Position(1, 1), CompassDirection.North, plateau);
-            MarsRover mover = new MarsRover(new Position(1, 2), CompassDirection.South, plateau);
-
-            Assert.Throws<ArgumentException>(() => mover.Move());
+            Assert.Throws<InvalidOperationException>(() => mover.Move());
             Assert.Equal(new Position(1, 2), mover.Position);
         }
     }

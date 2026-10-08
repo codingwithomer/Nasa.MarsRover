@@ -6,13 +6,17 @@ namespace Nasa.MarsRoboticRover.Test
 {
     public class MissionRunnerTests
     {
+        private static ServiceProvider BuildProvider()
+        {
+            return new ServiceCollection().AddMarsRover().BuildServiceProvider(validateScopes: true);
+        }
+
         [Fact]
         public void Run_WithDefaultRegistrations_ProducesTheSampleReport()
         {
-            using ServiceProvider provider = new ServiceCollection().AddMarsRover().BuildServiceProvider(validateScopes: true);
-            using IServiceScope scope = provider.CreateScope();
+            using ServiceProvider provider = BuildProvider();
 
-            string report = scope.ServiceProvider.GetRequiredService<MissionRunner>().Run();
+            string report = provider.GetRequiredService<MissionRunner>().Run();
 
             string expected = string.Join(Environment.NewLine,
                 "Test Input:", "5 5", "1 2 N", "LMLMLMLMM", "3 3 E", "MMRMMRMRRM", "", "",
@@ -21,17 +25,12 @@ namespace Nasa.MarsRoboticRover.Test
         }
 
         [Fact]
-        public void Run_InSeparateScopes_DoesNotShareMissionState()
+        public void Run_Repeatedly_ProducesTheSameReport()
         {
-            using ServiceProvider provider = new ServiceCollection().AddMarsRover().BuildServiceProvider(validateScopes: true);
+            using ServiceProvider provider = BuildProvider();
+            MissionRunner runner = provider.GetRequiredService<MissionRunner>();
 
-            string first, second;
-            using (IServiceScope scope = provider.CreateScope())
-                first = scope.ServiceProvider.GetRequiredService<MissionRunner>().Run();
-            using (IServiceScope scope = provider.CreateScope())
-                second = scope.ServiceProvider.GetRequiredService<MissionRunner>().Run();
-
-            Assert.Equal(first, second);
+            Assert.Equal(runner.Run(), runner.Run());
         }
     }
 }

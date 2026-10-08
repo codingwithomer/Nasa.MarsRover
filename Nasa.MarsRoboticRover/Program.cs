@@ -11,9 +11,7 @@ namespace Nasa.MarsRoboticRover
                 .AddMarsRover()
                 .BuildServiceProvider(validateScopes: true);
 
-            using IServiceScope scope = serviceProvider.CreateScope();
-
-            Console.WriteLine(scope.ServiceProvider.GetRequiredService<MissionRunner>().Run());
+            Console.WriteLine(serviceProvider.GetRequiredService<MissionRunner>().Run());
 
             if (!Console.IsInputRedirected)
             {

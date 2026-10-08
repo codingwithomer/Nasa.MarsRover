@@ -1,15 +1,16 @@
 ﻿using Nasa.MarsRoboticRover.BLL.Interfaces;
 using Nasa.MarsRoboticRover.Entities;
-using Nasa.MarsRoboticRover.Entities.Interfaces;
 
 namespace Nasa.MarsRoboticRover.BLL.Commands
 {
     public class PrintPositionAndCompassDirectionCommand : ICommand
     {
-        public string Execute(ILocation location)
+        public void Execute(MissionContext context)
         {
-            var rover = location.GetRover();
-            return rover.PrintPositionAndCompassDirection();
+            Position position = context.CurrentRover.Position;
+            char heading = context.CurrentRover.CompassDirection.ToLetter();
+
+            context.AddReportLine($"{position.X} {position.Y} {heading}");
         }
     }
 }

@@ -5,33 +5,29 @@ namespace Nasa.MarsRoboticRover.Entities
 {
     public class MarsRover : IRover
     {
+        private const int DirectionCount = 4;
+
+        private readonly ITerrain _terrain;
+
         public Position Position { get; private set; }
         public CompassDirection CompassDirection { get; private set; }
-        public ILocation Plateau { get; private set; }
 
-        public MarsRover(Position position, CompassDirection compassDirection, ILocation plateau)
+        internal MarsRover(Position position, CompassDirection compassDirection, ITerrain terrain)
         {
-            if (!plateau.IsPositionValid(position))
-                throw new ArgumentException($"{position} is not valid.", "position");
-
-            if (!plateau.IsPositionFree(position))
-                throw new ArgumentException($"{position} is not free.", "position");
-
             Position = position;
             CompassDirection = compassDirection;
-            Plateau = plateau;
-            Plateau.AddRover(this);
+            _terrain = terrain;
         }
 
         public void Rotate(Rotation rotation)
         {
-            int compassDirectionIntValue = (int)CompassDirection + (int)rotation + 4;
-            CompassDirection = (CompassDirection)(compassDirectionIntValue % 4);
+            int turned = (int)CompassDirection + (int)rotation + DirectionCount;
+            CompassDirection = (CompassDirection)(turned % DirectionCount);
         }
 
         public void Move()
         {
-            Position position = CompassDirection switch
+            Position target = CompassDirection switch
             {
                 CompassDirection.North => new Position(Position.X, Position.Y + 1),
                 CompassDirection.East => new Position(Position.X + 1, Position.Y),
@@ -40,18 +36,17 @@ namespace Nasa.MarsRoboticRover.Entities
                 _ => throw new InvalidOperationException($"Unknown compass direction {CompassDirection}.")
             };
 
-            if (!Plateau.IsPositionValid(position))
-                throw new ArgumentException($"{position} is not valid. Cannot move towards {CompassDirection} from current position {Position}.", "position");
+            if (!_terrain.IsPositionValid(target))
+            {
+                throw new InvalidOperationException($"{target} is not valid. Cannot move towards {CompassDirection} from current position {Position}.");
+            }
 
-            if (!Plateau.IsPositionFree(position))
-                throw new ArgumentException($"{position} is not free. Cannot move towards {CompassDirection} from current position {Position}.", "position");
+            if (!_terrain.IsPositionFree(target))
+            {
+                throw new InvalidOperationException($"{target} is not free. Cannot move towards {CompassDirection} from current position {Position}.");
+            }
 
-            Position = position;
-        }
-
-        public string PrintPositionAndCompassDirection()
-        {
-            return $"{Position.X} {Position.Y} {CompassDirection.ToLetter()}{Environment.NewLine}";
+            Position = target;
         }
     }
 }

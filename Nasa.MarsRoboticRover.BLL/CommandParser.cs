@@ -61,7 +61,7 @@ namespace Nasa.MarsRoboticRover.BLL
 
                         Position position = new Position(x, y);
 
-                        ICommand locationInitializeCommand = new LocationInitializeCommand(position);
+                        ICommand locationInitializeCommand = new DefinePlateauCommand(position);
 
                         commands.Add(locationInitializeCommand);
                     }
@@ -82,7 +82,7 @@ namespace Nasa.MarsRoboticRover.BLL
 
                         Position roverPosition = new Position(x, y);
 
-                        ICommand roverCreationCommand = new RoverCreationCommand(roverPosition, compassDirection);
+                        ICommand roverCreationCommand = new DeployRoverCommand(roverPosition, compassDirection);
 
                         commands.Add(roverCreationCommand);
                     }

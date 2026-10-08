@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Nasa.MarsRoboticRover.BLL;
 using Nasa.MarsRoboticRover.BLL.Interfaces;
-using Nasa.MarsRoboticRover.Entities;
-using Nasa.MarsRoboticRover.Entities.Interfaces;
 
 namespace Nasa.MarsRoboticRover
 {
@@ -10,13 +8,11 @@ namespace Nasa.MarsRoboticRover
     {
         public static IServiceCollection AddMarsRover(this IServiceCollection services)
         {
-            // Plateau holds the state of one mission, so everything that touches it is scoped:
-            // one scope == one mission run.
-            services.AddScoped<IMissionInputProvider, SampleMissionInputProvider>();
-            services.AddScoped<IParser, CommandParser>();
-            services.AddScoped<ICommandCenter, CommandCenter>();
-            services.AddScoped<ILocation, Plateau>();
-            services.AddScoped<MissionRunner>();
+            // All services are stateless: mission state lives in a MissionContext created per run.
+            services.AddSingleton<IMissionInputProvider, SampleMissionInputProvider>();
+            services.AddSingleton<IParser, CommandParser>();
+            services.AddSingleton<ICommandCenter, CommandCenter>();
+            services.AddSingleton<MissionRunner>();
 
             return services;
         }

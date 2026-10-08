@@ -5,60 +5,47 @@ using System.Linq;
 
 namespace Nasa.MarsRoboticRover.Entities
 {
-    public class Plateau : ILocation
+    public class Plateau : IPlateau
     {
-        private readonly List<IRover> _marsRover = new List<IRover>();
-        private Position? _maxPosition;
+        private readonly List<IRover> _rovers = new List<IRover>();
+        private readonly Position _upperRight;
 
-        public void Initialize(Position position)
+        public Plateau(Position upperRight)
         {
-            if (_maxPosition.HasValue)
+            if (upperRight.X < 0 || upperRight.Y < 0)
             {
-                throw new InvalidOperationException("Location is already initialized.");
+                throw new ArgumentException($"{upperRight} cannot have negative coordinates.", nameof(upperRight));
             }
 
-            _maxPosition = position;
+            _upperRight = upperRight;
         }
 
         public bool IsPositionValid(Position position)
         {
-            return position.IsWithin(Position.Origin, GetMaxPosition());
+            return position.IsWithin(Position.Origin, _upperRight);
         }
 
         public bool IsPositionFree(Position position)
         {
-            EnsureInitialized();
-
-            return !_marsRover.Any(r => r.Position == position);
+            return !_rovers.Any(rover => rover.Position == position);
         }
 
-        public void AddRover(IRover marsRover)
+        public IRover Deploy(Position position, CompassDirection compassDirection)
         {
-            EnsureInitialized();
-
-            _marsRover.Add(marsRover);
-        }
-
-        public IRover GetRover()
-        {
-            EnsureInitialized();
-
-            return _marsRover.Last();
-        }
-
-        private Position GetMaxPosition()
-        {
-            if (!_maxPosition.HasValue)
+            if (!IsPositionValid(position))
             {
-                throw new InvalidOperationException("Location is not initialized.");
+                throw new ArgumentException($"{position} is not valid.", nameof(position));
             }
 
-            return _maxPosition.Value;
-        }
+            if (!IsPositionFree(position))
+            {
+                throw new ArgumentException($"{position} is not free.", nameof(position));
+            }
 
-        private void EnsureInitialized()
-        {
-            GetMaxPosition();
+            MarsRover rover = new MarsRover(position, compassDirection, this);
+            _rovers.Add(rover);
+
+            return rover;
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿namespace Nasa.MarsRoboticRover.Entities.Interfaces
 {
-    public interface ILocation
+    /// <summary>What a rover needs to know about the ground it drives on.</summary>
+    public interface ITerrain
     {
-        void Initialize(Position maxPosition);
         bool IsPositionValid(Position position);
         bool IsPositionFree(Position position);
-        void AddRover(IRover marsRover);
-        IRover GetRover();
     }
 }

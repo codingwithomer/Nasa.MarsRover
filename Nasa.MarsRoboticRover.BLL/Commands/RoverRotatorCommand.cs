@@ -1,6 +1,5 @@
 ﻿using Nasa.MarsRoboticRover.BLL.Interfaces;
 using Nasa.MarsRoboticRover.Entities;
-using Nasa.MarsRoboticRover.Entities.Interfaces;
 
 namespace Nasa.MarsRoboticRover.BLL.Commands
 {
@@ -13,11 +12,9 @@ namespace Nasa.MarsRoboticRover.BLL.Commands
             _rotation = rotation;
         }
 
-        public string Execute(ILocation location)
+        public void Execute(MissionContext context)
         {
-            var rover = location.GetRover();
-            rover.Rotate(_rotation);
-            return string.Empty;
+            context.CurrentRover.Rotate(_rotation);
         }
     }
 }

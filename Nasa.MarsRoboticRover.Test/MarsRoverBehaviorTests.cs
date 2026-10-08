@@ -1,4 +1,5 @@
-using Nasa.MarsRoboticRover.Entities;
+﻿using Nasa.MarsRoboticRover.Entities;
+using Nasa.MarsRoboticRover.Entities.Interfaces;
 using System;
 using Xunit;
 
@@ -6,11 +7,9 @@ namespace Nasa.MarsRoboticRover.Test
 {
     public class MarsRoverBehaviorTests
     {
-        private static MarsRover CreateRover(int x, int y, CompassDirection direction)
+        private static IRover CreateRover(int x, int y, CompassDirection direction)
         {
-            Plateau plateau = new Plateau();
-            plateau.Initialize(new Position(5, 5));
-            return new MarsRover(new Position(x, y), direction, plateau);
+            return new Plateau(new Position(5, 5)).Deploy(new Position(x, y), direction);
         }
 
         [Theory]
@@ -20,7 +19,7 @@ namespace Nasa.MarsRoboticRover.Test
         [InlineData(CompassDirection.West, 1, 2)]
         public void Move_AdvancesOneSquareInFacingDirection(CompassDirection direction, int expectedX, int expectedY)
         {
-            MarsRover rover = CreateRover(2, 2, direction);
+            IRover rover = CreateRover(2, 2, direction);
 
             rover.Move();
 
@@ -35,7 +34,7 @@ namespace Nasa.MarsRoboticRover.Test
         [InlineData(CompassDirection.East, CompassDirection.North)]
         public void Rotate_Left_TurnsCounterClockwise(CompassDirection start, CompassDirection expected)
         {
-            MarsRover rover = CreateRover(2, 2, start);
+            IRover rover = CreateRover(2, 2, start);
 
             rover.Rotate(Rotation.Left);
 
@@ -50,7 +49,7 @@ namespace Nasa.MarsRoboticRover.Test
         [InlineData(CompassDirection.West, CompassDirection.North)]
         public void Rotate_Right_TurnsClockwise(CompassDirection start, CompassDirection expected)
         {
-            MarsRover rover = CreateRover(2, 2, start);
+            IRover rover = CreateRover(2, 2, start);
 
             rover.Rotate(Rotation.Right);
 
@@ -65,31 +64,10 @@ namespace Nasa.MarsRoboticRover.Test
         [InlineData(0, 0, CompassDirection.West)]
         public void Move_OffThePlateau_ThrowsAndKeepsPosition(int x, int y, CompassDirection direction)
         {
-            MarsRover rover = CreateRover(x, y, direction);
+            IRover rover = CreateRover(x, y, direction);
 
-            Assert.Throws<ArgumentException>(() => rover.Move());
+            Assert.Throws<InvalidOperationException>(() => rover.Move());
             Assert.Equal(new Position(x, y), rover.Position);
-        }
-
-        [Fact]
-        public void Constructor_OutsideThePlateau_Throws()
-        {
-            Plateau plateau = new Plateau();
-            plateau.Initialize(new Position(5, 5));
-
-            Assert.Throws<ArgumentException>(() => new MarsRover(new Position(6, 0), CompassDirection.North, plateau));
-        }
-
-        [Theory]
-        [InlineData(CompassDirection.North, "N")]
-        [InlineData(CompassDirection.East, "E")]
-        [InlineData(CompassDirection.South, "S")]
-        [InlineData(CompassDirection.West, "W")]
-        public void PrintPositionAndCompassDirection_UsesSingleLetterHeading(CompassDirection direction, string letter)
-        {
-            MarsRover rover = CreateRover(3, 4, direction);
-
-            Assert.Equal($"3 4 {letter}{Environment.NewLine}", rover.PrintPositionAndCompassDirection());
         }
     }
 }

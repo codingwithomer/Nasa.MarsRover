@@ -1,4 +1,5 @@
-using Nasa.MarsRoboticRover.Entities;
+﻿using Nasa.MarsRoboticRover.Entities;
+using Nasa.MarsRoboticRover.Entities.Interfaces;
 using System;
 using Xunit;
 
@@ -6,38 +7,14 @@ namespace Nasa.MarsRoboticRover.Test
 {
     public class PlateauTests
     {
-        [Fact]
-        public void IsPositionValid_BeforeInitialize_ThrowsInvalidOperation()
+        [Theory]
+        [InlineData(-1, 5)]
+        [InlineData(5, -1)]
+        public void Constructor_NegativeUpperRight_Throws(int x, int y)
         {
-            Plateau plateau = new Plateau();
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => new Plateau(new Position(x, y)));
 
-            Assert.Throws<InvalidOperationException>(() => plateau.IsPositionValid(new Position(0, 0)));
-        }
-
-        [Fact]
-        public void IsPositionFree_BeforeInitialize_ThrowsInvalidOperation()
-        {
-            Plateau plateau = new Plateau();
-
-            Assert.Throws<InvalidOperationException>(() => plateau.IsPositionFree(new Position(0, 0)));
-        }
-
-        [Fact]
-        public void Initialize_Twice_ThrowsInvalidOperation()
-        {
-            Plateau plateau = new Plateau();
-            plateau.Initialize(new Position(5, 5));
-
-            Assert.Throws<InvalidOperationException>(() => plateau.Initialize(new Position(3, 3)));
-        }
-
-        [Fact]
-        public void GetRover_WithoutRovers_ThrowsInvalidOperation()
-        {
-            Plateau plateau = new Plateau();
-            plateau.Initialize(new Position(5, 5));
-
-            Assert.Throws<InvalidOperationException>(() => plateau.GetRover());
+            Assert.Equal("upperRight", ex.ParamName);
         }
 
         [Theory]
@@ -47,12 +24,32 @@ namespace Nasa.MarsRoboticRover.Test
         [InlineData(0, -1, false)]
         [InlineData(6, 5, false)]
         [InlineData(5, 6, false)]
-        public void IsPositionValid_ChecksPlateauBounds(int x, int y, bool expected)
+        public void IsPositionValid_ChecksInclusiveBounds(int x, int y, bool expected)
         {
-            Plateau plateau = new Plateau();
-            plateau.Initialize(new Position(5, 5));
+            ITerrain plateau = new Plateau(new Position(5, 5));
 
             Assert.Equal(expected, plateau.IsPositionValid(new Position(x, y)));
+        }
+
+        [Fact]
+        public void Deploy_OutsideThePlateau_Throws()
+        {
+            IPlateau plateau = new Plateau(new Position(5, 5));
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => plateau.Deploy(new Position(6, 0), CompassDirection.North));
+
+            Assert.Equal("position", ex.ParamName);
+        }
+
+        [Fact]
+        public void IsPositionFree_ReflectsDeployedRovers()
+        {
+            IPlateau plateau = new Plateau(new Position(5, 5));
+            Assert.True(plateau.IsPositionFree(new Position(2, 2)));
+
+            plateau.Deploy(new Position(2, 2), CompassDirection.North);
+
+            Assert.False(plateau.IsPositionFree(new Position(2, 2)));
         }
     }
 }

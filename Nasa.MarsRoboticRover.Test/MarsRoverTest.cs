@@ -8,33 +8,27 @@ using Xunit;
 
 namespace Nasa.MarsRoboticRover.Test
 {
-
     public class MarsRoverTest
     {
-        private readonly ICommandCenter _commandCenter;
-        private readonly ILocation _location;
-
-        public MarsRoverTest()
-        {
-            _location = new Plateau();
-            _commandCenter = new CommandCenter(_location);
-        }
-
         [Fact]
         public void CommandParser_Should_GenerateCommandsAndOutput()
         {
             IParser commandParser = new CommandParser();
+            ICommandCenter commandCenter = new CommandCenter();
+
             List<ICommand> commands = commandParser.Parse(new SampleMissionInputProvider().GetInput());
-            string output = _commandCenter.ExecuteCommands(commands);
+            string output = commandCenter.ExecuteCommands(commands);
+
             string expectedString = string.Join(Environment.NewLine, "1 3 N", "5 1 E", "");
             Assert.Equal(expectedString, output);
         }
 
         [Fact]
-        public void Rover_Should_GenerateOutput()
+        public void Rovers_ShouldEndUpWhereTheMissionBriefSays()
         {
-            _location.Initialize(new Position(5, 5));
-            IRover rover1 = new MarsRover(new Position(1, 2), CompassDirection.North, _location);
+            IPlateau plateau = new Plateau(new Position(5, 5));
+
+            IRover rover1 = plateau.Deploy(new Position(1, 2), CompassDirection.North);
             rover1.Rotate(Rotation.Left);
             rover1.Move();
             rover1.Rotate(Rotation.Left);
@@ -45,7 +39,7 @@ namespace Nasa.MarsRoboticRover.Test
             rover1.Move();
             rover1.Move();
 
-            IRover rover2 = new MarsRover(new Position(3, 3), CompassDirection.East, _location);
+            IRover rover2 = plateau.Deploy(new Position(3, 3), CompassDirection.East);
             rover2.Move();
             rover2.Move();
             rover2.Rotate(Rotation.Right);
@@ -57,9 +51,8 @@ namespace Nasa.MarsRoboticRover.Test
             rover2.Rotate(Rotation.Right);
             rover2.Move();
 
-            string output = rover1.PrintPositionAndCompassDirection() + rover2.PrintPositionAndCompassDirection();
-            string expectedString = string.Join(Environment.NewLine, "1 3 N", "5 1 E", "");
-            Assert.Equal(expectedString, output);
+            Assert.Equal((new Position(1, 3), CompassDirection.North), (rover1.Position, rover1.CompassDirection));
+            Assert.Equal((new Position(5, 1), CompassDirection.East), (rover2.Position, rover2.CompassDirection));
         }
     }
 }

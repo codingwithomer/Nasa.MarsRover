@@ -1,29 +1,22 @@
 ﻿using Nasa.MarsRoboticRover.BLL.Interfaces;
-using Nasa.MarsRoboticRover.Entities.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Nasa.MarsRoboticRover.BLL
 {
     public class CommandCenter : ICommandCenter
     {
-        private readonly ILocation _location;
-
-        public CommandCenter(ILocation location)
-        {
-            _location = location;
-        }
-
         public string ExecuteCommands(IEnumerable<ICommand> commands)
         {
-            StringBuilder output = new StringBuilder();
+            MissionContext context = new MissionContext();
 
             foreach (ICommand command in commands)
             {
-                output.Append(command.Execute(_location));
+                command.Execute(context);
             }
 
-            return output.ToString();
+            return string.Concat(context.ReportLines.Select(line => line + Environment.NewLine));
         }
     }
 }
