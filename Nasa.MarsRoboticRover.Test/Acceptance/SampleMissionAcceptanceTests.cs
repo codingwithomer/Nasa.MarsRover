@@ -1,58 +1,31 @@
 ﻿using Nasa.MarsRoboticRover.Application;
 using Nasa.MarsRoboticRover.Application.Interfaces;
-using Nasa.MarsRoboticRover.Domain;
 using Nasa.MarsRoboticRover.Test.Application;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Nasa.MarsRoboticRover.Test.Acceptance
 {
+    /// <summary>The example from the README, run through the real parser and executor.</summary>
     public class SampleMissionAcceptanceTests
     {
+        private const string BriefInput = "5 5\n1 2 N\nLMLMLMLMM\n3 3 E\nMMRMMRMRRM";
+
+        private static readonly string BriefOutput = string.Join(Environment.NewLine, "1 3 N", "5 1 E", "");
+
+        private readonly IParser _parser = TestParsers.CreateDefault();
+        private readonly IMissionExecutor _missionExecutor = new MissionExecutor();
+
         [Fact]
-        public void CommandParser_Should_GenerateCommandsAndOutput()
+        public void TheBriefsExampleInput_ProducesTheBriefsExpectedOutput()
         {
-            IParser commandParser = TestParsers.CreateDefault();
-            IMissionExecutor missionExecutor = new MissionExecutor();
-
-            IReadOnlyList<ICommand> commands = commandParser.Parse(new SampleMissionInputProvider().GetInput());
-            string output = missionExecutor.Execute(commands);
-
-            string expectedString = string.Join(Environment.NewLine, "1 3 N", "5 1 E", "");
-            Assert.Equal(expectedString, output);
+            Assert.Equal(BriefOutput, _missionExecutor.Execute(_parser.Parse(BriefInput)));
         }
 
         [Fact]
-        public void Rovers_ShouldEndUpWhereTheMissionBriefSays()
+        public void TheBuiltInSample_IsTheBriefsExample()
         {
-            Plateau plateau = new Plateau(new Position(5, 5));
-
-            MarsRover rover1 = plateau.Deploy(new Position(1, 2), CompassDirection.North);
-            rover1.Rotate(Rotation.Left);
-            rover1.Move();
-            rover1.Rotate(Rotation.Left);
-            rover1.Move();
-            rover1.Rotate(Rotation.Left);
-            rover1.Move();
-            rover1.Rotate(Rotation.Left);
-            rover1.Move();
-            rover1.Move();
-
-            MarsRover rover2 = plateau.Deploy(new Position(3, 3), CompassDirection.East);
-            rover2.Move();
-            rover2.Move();
-            rover2.Rotate(Rotation.Right);
-            rover2.Move();
-            rover2.Move();
-            rover2.Rotate(Rotation.Right);
-            rover2.Move();
-            rover2.Rotate(Rotation.Right);
-            rover2.Rotate(Rotation.Right);
-            rover2.Move();
-
-            Assert.Equal((new Position(1, 3), CompassDirection.North), (rover1.Position, rover1.CompassDirection));
-            Assert.Equal((new Position(5, 1), CompassDirection.East), (rover2.Position, rover2.CompassDirection));
+            Assert.Equal(BriefInput, new SampleMissionInputProvider().GetInput());
         }
     }
 }
