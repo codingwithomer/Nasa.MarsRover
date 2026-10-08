@@ -5,8 +5,6 @@ namespace Nasa.MarsRoboticRover.Domain
 {
     public class MarsRover
     {
-        private const int DirectionCount = 4;
-
         private readonly ITerrain _terrain;
 
         public Position Position { get; private set; }
@@ -21,8 +19,12 @@ namespace Nasa.MarsRoboticRover.Domain
 
         public void Rotate(Rotation rotation)
         {
-            int turned = (int)CompassDirection + (int)rotation + DirectionCount;
-            CompassDirection = (CompassDirection)(turned % DirectionCount);
+            CompassDirection = rotation switch
+            {
+                Rotation.Left => CompassDirection.TurnLeft(),
+                Rotation.Right => CompassDirection.TurnRight(),
+                _ => throw new ArgumentOutOfRangeException(nameof(rotation), rotation, null)
+            };
         }
 
         public void Move()
