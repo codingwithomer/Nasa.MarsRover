@@ -67,12 +67,10 @@ namespace Nasa.MarsRoboticRover.BLL
 
                     else
                     {
-                        if (commandLineParts[2].Length != 1 || !"NESW".Contains(commandLineParts[2]))
+                        if (commandLineParts[2].Length != 1 || !CompassDirectionExtensions.TryParse(commandLineParts[2][0], out CompassDirection compassDirection))
                         {
                             throw new ArgumentException($"Rover initialization line should have either N, E, S, or W on the last part on line {i}.", "input");
                         }
-
-                        CompassDirection compassDirection = GetCompassDirection(commandLineParts);
 
                         if (currentRoverIndex != -1)
                         {
@@ -130,29 +128,6 @@ namespace Nasa.MarsRoboticRover.BLL
                 default:
                     throw new ArgumentException($"Rover rotation/move line should have either L, R, or M characters on line {index}.", "input");
             }
-        }
-
-        private CompassDirection GetCompassDirection(string[] lineParts)
-        {
-            CompassDirection compassDirection = CompassDirection.North;
-
-            switch (lineParts[2][0])
-            {
-                case 'N':
-                    compassDirection = CompassDirection.North;
-                    break;
-                case 'E':
-                    compassDirection = CompassDirection.East;
-                    break;
-                case 'S':
-                    compassDirection = CompassDirection.South;
-                    break;
-                case 'W':
-                    compassDirection = CompassDirection.West;
-                    break;
-            }
-
-            return compassDirection;
         }
 
         private string[] GetCommandLines(string commandInput)

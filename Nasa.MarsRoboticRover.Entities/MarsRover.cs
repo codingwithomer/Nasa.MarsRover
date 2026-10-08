@@ -31,26 +31,14 @@ namespace Nasa.MarsRoboticRover.Entities
 
         public void Move()
         {
-            int x = Position.X;
-            int y = Position.Y;
-
-            switch (CompassDirection)
+            Position position = CompassDirection switch
             {
-                case CompassDirection.North:
-                    y++;
-                    break;
-                case CompassDirection.East:
-                    x++;
-                    break;
-                case CompassDirection.South:
-                    y--;
-                    break;
-                case CompassDirection.West:
-                    x--;
-                    break;
-            }
-
-            Position position = new Position(x, y);
+                CompassDirection.North => new Position(Position.X, Position.Y + 1),
+                CompassDirection.East => new Position(Position.X + 1, Position.Y),
+                CompassDirection.South => new Position(Position.X, Position.Y - 1),
+                CompassDirection.West => new Position(Position.X - 1, Position.Y),
+                _ => throw new InvalidOperationException($"Unknown compass direction {CompassDirection}.")
+            };
 
             if (!Plateau.IsPositionValid(position))
                 throw new ArgumentException($"{position} is not valid. Cannot move towards {CompassDirection} from current position {Position}.", "position");
@@ -63,24 +51,7 @@ namespace Nasa.MarsRoboticRover.Entities
 
         public string PrintPositionAndCompassDirection()
         {
-            string compassDirectionStringValue = string.Empty;
-
-            switch (CompassDirection)
-            {
-                case CompassDirection.North:
-                    compassDirectionStringValue = "N";
-                    break;
-                case CompassDirection.East:
-                    compassDirectionStringValue = "E";
-                    break;
-                case CompassDirection.South:
-                    compassDirectionStringValue = "S";
-                    break;
-                case CompassDirection.West:
-                    compassDirectionStringValue = "W";
-                    break;
-            }
-            return $"{Position.X} {Position.Y} {compassDirectionStringValue}{Environment.NewLine}";
+            return $"{Position.X} {Position.Y} {CompassDirection.ToLetter()}{Environment.NewLine}";
         }
     }
 }
