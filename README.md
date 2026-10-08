@@ -58,10 +58,40 @@ Expected Output:
 dotnet run --project Nasa.MarsRoboticRover                  # built-in sample mission (the example above)
 dotnet run --project Nasa.MarsRoboticRover -- mission.txt   # mission read from a file
 cat mission.txt | dotnet run --project Nasa.MarsRoboticRover # mission read from standard input
+dotnet run --project Nasa.MarsRoboticRover -- --help        # usage (also -h)
 ```
 
-Exit codes: `0` success, `1` invalid mission or usage (message on stderr), `2` input could not be read.
+Output contract:
+
+- The built-in sample is shown as an example: the input under `Test Input:` and the report under `Expected Output:`.
+  It waits for a key press when run interactively.
+- A mission from a file or from standard input prints **only the report** on stdout, one `X Y H` line per rover and
+  nothing else, so scripts can consume it. It never waits for a key.
+- Redirected standard input that is empty is an error (`Empty input.`), it does not fall back to the sample.
+- Errors go to stderr, never to stdout. If a rover fails, the rovers that had already finished are still printed on
+  stdout and the error names the failing rover and input line (`Rover 2 (line 4): ...`).
+
+Exit codes: `0` success, `1` invalid mission or usage, `2` the input could not be read (missing file, a directory,
+an empty file name, no permission).
 `dotnet test` runs the whole suite.
+
+## Rules
+
+- The plateau is a grid of whole-number points from `(0, 0)` to the upper-right corner on the first line. The first
+  non-blank line is always the plateau; blank lines are ignored; `\n`, `\r\n` and `\r` line endings and a UTF-8 byte
+  order mark are accepted.
+- Numbers are plain non-negative whole numbers up to 2147483647 (no sign, no decimals).
+- A rover landing outside the plateau, or moving off it, is an error: it is never silently ignored.
+- Rovers cannot share a square. A rover cannot land on, or move onto, a square an earlier rover currently occupies;
+  a square an earlier rover has left is free again.
+- Rovers run sequentially: the second rover starts only when the first has finished all its instructions.
+- When a rover fails the mission stops. The rovers that finished before it are still reported, the error names the
+  failing rover and line, and the exit code is `1`.
+- Headings (`N`, `E`, `S`, `W`) and instructions (`L`, `R`, `M`) must be upper case; lowercase is rejected with a
+  message saying so. Instructions are written without spaces (`MM`, not `M M`).
+- Every rover needs an instruction line right after its position; a rover followed by another rover or by the end
+  of the input is rejected.
+- A mission that only defines the plateau is valid and has an empty report.
 
 ## Architecture
 
@@ -80,7 +110,9 @@ Nasa.MarsRoboticRover              console host: composition root, input sources
   All services are stateless.
 - **Console** wires everything in `AddMarsRover()`, picks the input source and prints the report.
 
-Errors: parse errors are `ArgumentException`s that name the 1-based input line. In the domain, an argument that can never
+Errors: everything that is wrong with the user's mission is an `InvalidMissionException` (a parse error naming the
+1-based input line, or a rover that cannot carry out its instructions, naming the rover and the line). Other exception
+types are programming errors and are not reported as an invalid mission. In the domain, an argument that can never
 be valid (outside the plateau, unknown heading) is an `ArgumentOutOfRangeException`; a call that the current state forbids
 (occupied square, blocked move) is an `InvalidOperationException`.
 
@@ -88,13 +120,14 @@ be valid (outside the plateau, unknown heading) is an `ArgumentOutOfRangeExcepti
 
 | To add...                  | Do this                                                                                          |
 |----------------------------|--------------------------------------------------------------------------------------------------|
-| a new instruction letter   | `InstructionSet.CreateDefault().With('X', command)`; nothing else changes                        |
+| a new instruction letter   | implement `ICommand` if needed, then change the `IInstructionSet` registration in `AddMarsRover()` to `InstructionSet.CreateDefault().With('X', command)` |
 | a new rover behavior       | implement `ICommand` (it works on `MissionContext`)                                              |
-| a different input source   | implement `IMissionInputProvider` and register it                                                |
-| a new kind of input line   | implement `ILineParser`, add a `LineKind` value, register it, and extend `CommandParser.ValidateOrder` if the new kind has ordering rules |
+| a different input source   | implement `IMissionInputProvider` and register it in the host (`AddMarsRover()` registers none)  |
+| a new kind of input line   | implement `ILineParser`, add a `LineKind` value, register it, and teach `CommandParser` about it (ordering rules, and which parser claims a line, live there and in `InputLine.IsFirst`) |
 
-Adding an instruction letter or an input source is purely additive. A new *line kind* is not: the ordering rules
-(plateau first, instructions after a rover) live in `CommandParser`, so it has to learn about the new kind.
+Adding an instruction letter or an input source is additive (one registration in the host). A new *line kind* is not:
+the ordering rules (plateau first, instructions after a rover, no rover without instructions) live in `CommandParser`,
+so it has to learn about the new kind.
 
 ### Patterns
 
