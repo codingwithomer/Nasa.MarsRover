@@ -18,7 +18,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
 
         public static CompassDirection ParseCompassDirection(InputLine line, string part)
         {
-            if (part.Length != 1 || !CompassDirectionExtensions.TryParse(part[0], out CompassDirection compassDirection))
+            if (part.Length != 1 || !CompassDirectionLetters.TryParse(part[0], out CompassDirection compassDirection))
             {
                 throw new ArgumentException($"Rover initialization line should have either N, E, S, or W on the last part on line {line.Number}.", "input");
             }
