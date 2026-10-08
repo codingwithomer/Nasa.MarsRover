@@ -2,6 +2,7 @@
 using Nasa.MarsRoboticRover.BLL.Interfaces;
 using Nasa.MarsRoboticRover.Entities;
 using Nasa.MarsRoboticRover.Entities.Interfaces;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -28,7 +29,7 @@ namespace Nasa.MarsRoboticRover.Test
             List<ICommand> commands = commandParser.Parse(_testInput);
             _commandCenter.ExecuteCommands(commands);
             string output = _commandCenter.GetReportOutput();
-            string expectedString = "Test Input:\r\n5 5\r\n1 2 N\r\nLMLMLMLMM\r\n3 3 E\r\nMMRMMRMRRM\r\n\r\n\r\nExpected Output:\r\n1 3 N\r\n5 1 E\r\n";
+            string expectedString = string.Join(Environment.NewLine, "Test Input:", "5 5", "1 2 N", "LMLMLMLMM", "3 3 E", "MMRMMRMRRM", "", "", "Expected Output:", "1 3 N", "5 1 E", "");
             Assert.Equal(expectedString, output.ToString());
         }
 
@@ -60,7 +61,7 @@ namespace Nasa.MarsRoboticRover.Test
             rover2.Move();
 
             string output = rover1.PrintPositionAndCompassDirection() + rover2.PrintPositionAndCompassDirection();
-            string expectedString = "1 3 N\r\n5 1 E\r\n";
+            string expectedString = string.Join(Environment.NewLine, "1 3 N", "5 1 E", "");
             Assert.Equal(expectedString, output);
         }
     }

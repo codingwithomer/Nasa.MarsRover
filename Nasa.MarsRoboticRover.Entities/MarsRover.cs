@@ -80,7 +80,7 @@ namespace Nasa.MarsRoboticRover.Entities
                     compassDirectionStringValue = "W";
                     break;
             }
-            return $"{Position.X} {Position.Y} {compassDirectionStringValue}\r\n";
+            return $"{Position.X} {Position.Y} {compassDirectionStringValue}{Environment.NewLine}";
         }
     }
 }
