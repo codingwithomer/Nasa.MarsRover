@@ -18,19 +18,25 @@ namespace Nasa.MarsRoboticRover.Test.Application
         }
 
         [Fact]
-        public void Execute_DeployingBeforeDefiningThePlateau_Throws()
+        public void Execute_DeployingBeforeDefiningThePlateau_FailsWithTheMissionProblem()
         {
             ICommand[] commands = { new DeployRoverCommand(new Position(1, 2), CompassDirection.North) };
 
-            Assert.Throws<InvalidOperationException>(() => _missionExecutor.Execute(commands));
+            Assert.Throws<InvalidMissionException>(() => _missionExecutor.Execute(commands));
         }
 
         [Fact]
-        public void Execute_MovingBeforeAnyRoverIsDeployed_Throws()
+        public void Execute_MovingBeforeAnyRoverIsDeployed_FailsWithTheMissionProblem()
         {
             ICommand[] commands = { new DefinePlateauCommand(new Position(5, 5)), new MoveRoverCommand() };
 
-            Assert.Throws<InvalidOperationException>(() => _missionExecutor.Execute(commands));
+            Assert.Throws<InvalidMissionException>(() => _missionExecutor.Execute(commands));
+        }
+
+        [Fact]
+        public void Execute_NullCommands_IsAProgrammingError()
+        {
+            Assert.Throws<ArgumentNullException>(() => _missionExecutor.Execute(null));
         }
 
         [Fact]
@@ -66,15 +72,43 @@ namespace Nasa.MarsRoboticRover.Test.Application
         }
 
         [Fact]
-        public void Execute_RoverDeployedOutsideThePlateau_Throws()
+        public void Execute_RoverDeployedOutsideThePlateau_NamesTheRoverAndTheLine()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => Run("5 5\n6 1 N"));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => Run("5 5\n1 1 N\nM\n6 1 N\nM"));
+
+            Assert.Equal("Rover 2 (line 4): (6, 1) is outside the plateau.", ex.Message);
         }
 
         [Fact]
-        public void Execute_TwoRoversOnTheSameSquare_Throws()
+        public void Execute_RoverMovingOffThePlateau_NamesTheRoverTheLineAndTheSquares()
         {
-            Assert.Throws<InvalidOperationException>(() => Run("5 5\n1 1 N\n1 1 E"));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => Run("5 5\n1 1 N\nM\n2 4 N\nMM"));
+
+            Assert.Equal("Rover 2 (line 5): (2, 6) is outside the plateau; it cannot move North from (2, 5).", ex.Message);
+        }
+
+        [Fact]
+        public void Execute_TwoRoversOnTheSameSquare_NamesTheRoverAndTheLine()
+        {
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => Run("5 5\n1 1 N\nL\n1 1 E\nM"));
+
+            Assert.Equal("Rover 2 (line 4): (1, 1) is already occupied by another rover.", ex.Message);
+        }
+
+        [Fact]
+        public void Execute_RoverBlockedByAnotherRover_NamesTheRoverAndTheLine()
+        {
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => Run("5 5\n1 2 N\nL\n1 1 N\nM"));
+
+            Assert.Equal("Rover 2 (line 5): (1, 2) is occupied by another rover; it cannot move North from (1, 1).", ex.Message);
+        }
+
+        [Fact]
+        public void Execute_RoverNextToIntMaxValue_FailsCleanlyInsteadOfWrappingAround()
+        {
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => Run("2147483647 5\n2147483647 0 E\nM"));
+
+            Assert.Equal("Rover 1 (line 3): The next square is outside the plateau; it cannot move East from (2147483647, 0).", ex.Message);
         }
 
         [Fact]
@@ -86,9 +120,20 @@ namespace Nasa.MarsRoboticRover.Test.Application
         }
 
         [Fact]
-        public void Execute_WhenALaterRoverFails_NoPartialReportIsProduced()
+        public void Execute_WhenALaterRoverFails_TheFinishedRoversAreStillReported()
         {
-            Assert.Throws<InvalidOperationException>(() => Run("5 5\n1 1 N\nM\n1 1 S\nMM"));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => Run("5 5\n1 1 N\nM\n3 3 E\nM\n5 5 N\nM"));
+
+            Assert.Equal(string.Join(Environment.NewLine, "1 2 N", "4 3 E", ""), ex.PartialReport);
+            Assert.StartsWith("Rover 3 (line 7)", ex.Message);
+        }
+
+        [Fact]
+        public void Execute_WhenTheFirstRoverFails_ThePartialReportIsEmpty()
+        {
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => Run("5 5\n9 9 N\nM"));
+
+            Assert.Equal(string.Empty, ex.PartialReport);
         }
     }
 }

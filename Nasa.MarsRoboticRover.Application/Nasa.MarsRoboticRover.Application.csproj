@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Nasa.MarsRoboticRover.Test" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Nasa.MarsRoboticRover.Domain\Nasa.MarsRoboticRover.Domain.csproj" />
   </ItemGroup>
 

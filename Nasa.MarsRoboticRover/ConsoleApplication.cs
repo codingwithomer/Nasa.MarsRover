@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Nasa.MarsRoboticRover.Application;
 using Nasa.MarsRoboticRover.Application.Interfaces;
 using System;
 using System.IO;
@@ -29,29 +30,25 @@ namespace Nasa.MarsRoboticRover
                 .AddSingleton(SelectInputProvider(args, input, inputRedirected))
                 .BuildServiceProvider();
 
+            MissionRunner runner = serviceProvider.GetRequiredService<MissionRunner>();
+
             try
             {
-                output.WriteLine(serviceProvider.GetRequiredService<MissionRunner>().Run());
+                output.WriteLine(runner.Run());
                 return Success;
             }
-            catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException)
+            catch (InvalidMissionException ex)
             {
-                error.WriteLine($"Invalid mission: {Describe(ex)}");
+                // Rovers that finished before the failure are still reported.
+                output.Write(ex.PartialReport);
+                error.WriteLine($"Invalid mission: {ex.Message}");
                 return InvalidMission;
             }
-            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is NotSupportedException)
             {
                 error.WriteLine($"Cannot read the mission input: {ex.Message}");
                 return InputUnreadable;
             }
-        }
-
-        /// <summary>The exception message without the "(Parameter 'x')" suffix .NET appends to argument exceptions.</summary>
-        private static string Describe(Exception ex)
-        {
-            return ex is ArgumentException argumentException && argumentException.ParamName != null
-                ? argumentException.Message.Replace($" (Parameter '{argumentException.ParamName}')", string.Empty)
-                : ex.Message;
         }
 
         private static IMissionInputProvider SelectInputProvider(string[] args, TextReader input, bool inputRedirected)

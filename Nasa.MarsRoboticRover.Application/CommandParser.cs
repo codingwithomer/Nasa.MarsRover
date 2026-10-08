@@ -1,4 +1,5 @@
-﻿using Nasa.MarsRoboticRover.Application.Interfaces;
+﻿using Nasa.MarsRoboticRover.Application.Commands;
+using Nasa.MarsRoboticRover.Application.Interfaces;
 using Nasa.MarsRoboticRover.Application.Parsing;
 using System;
 using System.Collections.Generic;
@@ -28,9 +29,11 @@ namespace Nasa.MarsRoboticRover.Application
 
         public IReadOnlyList<ICommand> Parse(string commandInput)
         {
+            ArgumentNullException.ThrowIfNull(commandInput);
+
             if (string.IsNullOrWhiteSpace(commandInput))
             {
-                throw new ArgumentException("Empty input.", "input");
+                throw new InvalidMissionException("Empty input.");
             }
 
             List<ICommand> commands = new List<ICommand>();
@@ -46,7 +49,7 @@ namespace Nasa.MarsRoboticRover.Application
 
                 ValidateOrder(lineParser.Kind, line, isFirstLine, roverSeen);
 
-                commands.AddRange(lineCommands);
+                commands.AddRange(lineCommands.Select(command => new SourceLineCommand(command, line.Number)));
 
                 roverSeen |= lineParser.Kind == LineKind.Rover;
                 isFirstLine = false;
@@ -61,7 +64,7 @@ namespace Nasa.MarsRoboticRover.Application
 
             if (lineParser == null)
             {
-                throw new ArgumentException($"Line {line.Number} is not a plateau (X Y), a rover position (X Y H) or a list of instructions.", "input");
+                throw new InvalidMissionException($"Line {line.Number} is not a plateau (X Y), a rover position (X Y H) or a list of instructions.");
             }
 
             return lineParser;
@@ -71,17 +74,17 @@ namespace Nasa.MarsRoboticRover.Application
         {
             if (isFirstLine && kind != LineKind.Plateau)
             {
-                throw new ArgumentException($"The first line must define the plateau, found line {line.Number}.", "input");
+                throw new InvalidMissionException($"The first line must define the plateau, found line {line.Number}.");
             }
 
             if (!isFirstLine && kind == LineKind.Plateau)
             {
-                throw new ArgumentException($"Plateau initialization should be on the first line on line {line.Number}.", "input");
+                throw new InvalidMissionException($"Plateau initialization should be on the first line on line {line.Number}.");
             }
 
             if (kind == LineKind.Instructions && !roverSeen)
             {
-                throw new ArgumentException($"Instructions on line {line.Number} must follow a rover position.", "input");
+                throw new InvalidMissionException($"Instructions on line {line.Number} must follow a rover position.");
             }
         }
     }

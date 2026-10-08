@@ -31,9 +31,8 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
             {
                 if (!_instructionSet.TryGetCommand(letter, out ICommand command))
                 {
-                    throw new ArgumentException(
-                        $"Unknown instruction '{letter}' on line {line.Number}. Allowed instructions: {string.Join(", ", _instructionSet.Letters)}.",
-                        "input");
+                    throw new InvalidMissionException(
+                        $"Unknown instruction '{letter}' on line {line.Number}. Allowed instructions: {string.Join(", ", _instructionSet.Letters)}.");
                 }
 
                 commands.Add(command);

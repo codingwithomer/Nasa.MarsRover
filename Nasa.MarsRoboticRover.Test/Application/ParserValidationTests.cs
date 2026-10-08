@@ -9,12 +9,17 @@ namespace Nasa.MarsRoboticRover.Test.Application
         private readonly CommandParser _parser = TestParsers.CreateDefault();
 
         [Fact]
-        public void Parse_EmptyInput_ThrowsWithInputAsParamName()
+        public void Parse_EmptyInput_ThrowsInvalidMission()
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _parser.Parse(string.Empty));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => _parser.Parse(string.Empty));
 
-            Assert.Equal("input", ex.ParamName);
             Assert.StartsWith("Empty input.", ex.Message);
+        }
+
+        [Fact]
+        public void Parse_NullInput_IsAProgrammingError()
+        {
+            Assert.Throws<ArgumentNullException>(() => _parser.Parse(null));
         }
 
         [Theory]
@@ -22,11 +27,11 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [InlineData("5 5\n1 2 N\nLMX")]
         [InlineData("5 5\n-1 2 N\nM")]
         [InlineData("5 5\n1 2 N 4\nM")]
-        public void Parse_InvalidInput_ThrowsArgumentExceptionWithInputAsParamName(string input)
+        public void Parse_InvalidInput_ThrowsInvalidMissionWithoutDotNetParameterText(string input)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _parser.Parse(input));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => _parser.Parse(input));
 
-            Assert.Equal("input", ex.ParamName);
+            Assert.DoesNotContain("Parameter", ex.Message);
         }
 
         [Theory]
@@ -35,7 +40,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [InlineData("5 5\r\n1 2 X\r\nM", "line 2")]
         public void Parse_ErrorMessage_ReportsOneBasedLineNumberOfTheOriginalInput(string input, string expectedLine)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _parser.Parse(input));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => _parser.Parse(input));
 
             Assert.Contains(expectedLine, ex.Message);
         }
@@ -46,7 +51,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [InlineData("5 5\n\u0663 2 N\nM", "Unknown instruction '\u0663' on line 2")]
         public void Parse_UnknownInstruction_NamesTheOffendingCharacterAndLine(string input, string expectedMessagePart)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _parser.Parse(input));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => _parser.Parse(input));
 
             Assert.Contains(expectedMessagePart, ex.Message);
             Assert.Contains("Allowed instructions: L, M, R.", ex.Message);

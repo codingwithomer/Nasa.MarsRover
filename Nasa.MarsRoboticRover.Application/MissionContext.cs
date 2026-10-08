@@ -9,10 +9,14 @@ namespace Nasa.MarsRoboticRover.Application
     {
         private Plateau _plateau;
         private MarsRover _currentRover;
+        private int _roverNumber;
 
         public Plateau Plateau => _plateau ?? throw new InvalidOperationException("The plateau has not been defined yet.");
 
         public MarsRover CurrentRover => _currentRover ?? throw new InvalidOperationException("No rover has been deployed yet.");
+
+        /// <summary>How many rovers the mission has tried to deploy so far; the number of the rover being driven.</summary>
+        public int RoverNumber => _roverNumber;
 
         /// <summary>Every rover deployed so far, in deployment order; empty until a plateau exists.</summary>
         public IReadOnlyList<MarsRover> Rovers => _plateau?.Rovers ?? Array.Empty<MarsRover>();
@@ -31,6 +35,7 @@ namespace Nasa.MarsRoboticRover.Application
 
         public void DeployRover(Position position, CompassDirection compassDirection)
         {
+            _roverNumber++;
             _currentRover = Plateau.Deploy(position, compassDirection);
         }
     }

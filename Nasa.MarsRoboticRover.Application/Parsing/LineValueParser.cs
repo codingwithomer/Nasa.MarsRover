@@ -20,7 +20,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
         {
             if (part.Length != 1 || !CompassDirectionLetters.TryParse(part[0], out CompassDirection compassDirection))
             {
-                throw new ArgumentException($"Rover initialization line should have either N, E, S, or W on the last part on line {line.Number}.", "input");
+                throw new InvalidMissionException($"Rover initialization line should have either N, E, S, or W on the last part on line {line.Number}.");
             }
 
             return compassDirection;
@@ -30,7 +30,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
         {
             if (!int.TryParse(part, NumberStyles.None, CultureInfo.InvariantCulture, out int value))
             {
-                throw new ArgumentException($"Cannot parse positive integer from {part} on line {line.Number}.", "input");
+                throw new InvalidMissionException($"Cannot parse positive integer from {part} on line {line.Number}.");
             }
 
             return value;

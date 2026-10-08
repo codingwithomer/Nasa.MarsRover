@@ -19,7 +19,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         {
             IReadOnlyList<ICommand> commands = _parser.Parse("5 5\n1 2 N\nLM\n3 3 E\nR");
 
-            Type[] types = commands.Select(command => command.GetType()).ToArray();
+            Type[] types = commands.Select(command => ((SourceLineCommand)command).Command.GetType()).ToArray();
 
             Assert.Equal(new[]
             {
@@ -34,7 +34,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         {
             IReadOnlyList<ICommand> commands = _parser.Parse("5 5");
 
-            Assert.IsType<DefinePlateauCommand>(Assert.Single(commands));
+            Assert.IsType<DefinePlateauCommand>(((SourceLineCommand)Assert.Single(commands)).Command);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [InlineData("5 5\n1a 2 N\nM", "Cannot parse positive integer from 1a on line 2")]
         public void Parse_BreakingTheInputOrder_ExplainsWhatIsWrong(string input, string expectedMessagePart)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _parser.Parse(input));
+            InvalidMissionException ex = Assert.Throws<InvalidMissionException>(() => _parser.Parse(input));
 
             Assert.Contains(expectedMessagePart, ex.Message);
         }

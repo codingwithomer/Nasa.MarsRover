@@ -64,6 +64,24 @@ namespace Nasa.MarsRoboticRover.Test.Presentation
         }
 
         [Fact]
+        public void Run_WhenARoverFails_PrintsTheFinishedRoversAndNamesTheFailedOneOnStandardError()
+        {
+            int exitCode = Run(Array.Empty<string>(), "5 5\n1 1 N\nM\n3 3 E\nM\n5 5 N\nM\n", inputRedirected: true);
+
+            Assert.Equal(ConsoleApplication.InvalidMission, exitCode);
+            Assert.Equal(string.Join(Environment.NewLine, "1 2 N", "4 3 E", ""), _output.ToString());
+            Assert.Contains("Rover 3 (line 7)", _error.ToString());
+        }
+
+        [Fact]
+        public void Run_WithARoverDeployedOutsideThePlateau_NeverShowsDotNetArgumentText()
+        {
+            Run(Array.Empty<string>(), "5 5\n9 9 N\nM\n", inputRedirected: true);
+
+            Assert.Equal("Invalid mission: Rover 1 (line 2): (9, 9) is outside the plateau." + Environment.NewLine, _error.ToString());
+        }
+
+        [Fact]
         public void Run_WithAMalformedLine_ReportsTheLineNumber()
         {
             int exitCode = Run(Array.Empty<string>(), "5 5\n1 2 N\nLMX\n", inputRedirected: true);
