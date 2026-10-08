@@ -116,5 +116,29 @@ namespace Nasa.MarsRoboticRover.Test.Domain
             Assert.Throws<InvalidOperationException>(() => rover.Move());
             Assert.Equal(new Position(x, y), rover.Position);
         }
+
+        [Theory]
+        [InlineData(CompassDirection.East, int.MaxValue, 0)]
+        [InlineData(CompassDirection.North, 0, int.MaxValue)]
+        public void Move_NextToIntMaxValue_FailsAsOutsideThePlateauInsteadOfWrappingAround(CompassDirection direction, int x, int y)
+        {
+            MarsRover rover = new Plateau(new Position(int.MaxValue, int.MaxValue)).Deploy(new Position(x, y), direction);
+
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => rover.Move());
+
+            Assert.Contains("outside the plateau", ex.Message);
+            Assert.DoesNotContain("-2147483648", ex.Message);
+            Assert.Equal(new Position(x, y), rover.Position);
+        }
+
+        [Fact]
+        public void Move_OffThePlateau_NamesTheSquaresInvolved()
+        {
+            MarsRover rover = CreateRover(2, 5, CompassDirection.North);
+
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => rover.Move());
+
+            Assert.Equal("(2, 6) is outside the plateau; it cannot move North from (2, 5).", ex.Message);
+        }
     }
 }

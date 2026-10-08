@@ -21,6 +21,7 @@ namespace Nasa.MarsRoboticRover.Test.Architecture
 
         private static readonly Assembly DomainAssembly = typeof(Position).Assembly;
         private static readonly Assembly ApplicationAssembly = typeof(MissionExecutor).Assembly;
+        private static readonly Assembly ConsoleAssembly = typeof(ConsoleApplication).Assembly;
 
         private static XElement[] References(string project, string kind)
         {
@@ -67,6 +68,24 @@ namespace Nasa.MarsRoboticRover.Test.Architecture
         public void Console_DeclaresOnlyTheApplicationProject()
         {
             Assert.Equal(new[] { ApplicationLayer }, ReferencedProjects(ConsoleLayer));
+        }
+
+        [Fact]
+        public void Console_DeclaresOnlyTheDependencyInjectionPackage()
+        {
+            Assert.Equal(new[] { "Microsoft.Extensions.DependencyInjection" }, ReferencedPackages(ConsoleLayer));
+        }
+
+        [Fact]
+        public void Console_UsesTheApplicationButNeverTheDomainAssembly()
+        {
+            string[] others = ConsoleAssembly.GetReferencedAssemblies()
+                .Select(reference => reference.Name)
+                .Where(name => !name.StartsWith("System") && name != "netstandard" && name != "mscorlib" &&
+                               !name.StartsWith("Microsoft.Extensions") && name != ApplicationLayer)
+                .ToArray();
+
+            Assert.Empty(others);
         }
 
         [Fact]
