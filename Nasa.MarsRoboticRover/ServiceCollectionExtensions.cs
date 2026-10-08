@@ -7,11 +7,11 @@ namespace Nasa.MarsRoboticRover
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>Registers parsing and execution. The caller must also register one <see cref="IMissionInputProvider"/>.</summary>
         public static IServiceCollection AddMarsRover(this IServiceCollection services)
         {
             // All services are stateless: mission state lives in a MissionContext created per run.
-            // Default input; the console host replaces it with a file or stdin provider when asked to.
-            services.AddSingleton<IMissionInputProvider, SampleMissionInputProvider>();
+            // The mission input is not registered here: the host registers exactly one IMissionInputProvider.
             services.AddSingleton<IInstructionSet>(_ => InstructionSet.CreateDefault());
             services.AddSingleton<ILineParser, PlateauLineParser>();
             services.AddSingleton<ILineParser, RoverLineParser>();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Nasa.MarsRoboticRover.Application.Interfaces;
 using System;
 using Xunit;
 
@@ -8,11 +9,14 @@ namespace Nasa.MarsRoboticRover.Test.Presentation
     {
         private static ServiceProvider BuildProvider()
         {
-            return new ServiceCollection().AddMarsRover().BuildServiceProvider();
+            return new ServiceCollection()
+                .AddMarsRover()
+                .AddSingleton<IMissionInputProvider>(new SampleMissionInputProvider())
+                .BuildServiceProvider();
         }
 
         [Fact]
-        public void Run_WithDefaultRegistrations_ProducesTheReportWithoutDecoration()
+        public void Run_WithTheSampleInput_ProducesTheReportWithoutDecoration()
         {
             using ServiceProvider provider = BuildProvider();
 
@@ -28,6 +32,14 @@ namespace Nasa.MarsRoboticRover.Test.Presentation
             MissionRunner runner = provider.GetRequiredService<MissionRunner>();
 
             Assert.Equal(runner.Run(), runner.Run());
+        }
+
+        [Fact]
+        public void AddMarsRover_DoesNotRegisterAnInputProvider()
+        {
+            using ServiceProvider provider = new ServiceCollection().AddMarsRover().BuildServiceProvider();
+
+            Assert.Null(provider.GetService<IMissionInputProvider>());
         }
     }
 }
