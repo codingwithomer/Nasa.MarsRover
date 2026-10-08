@@ -1,4 +1,4 @@
-using Nasa.MarsRoboticRover.BLL;
+﻿using Nasa.MarsRoboticRover.BLL;
 using System;
 using Xunit;
 
@@ -6,7 +6,7 @@ namespace Nasa.MarsRoboticRover.Test
 {
     public class ParserValidationTests
     {
-        private readonly CommandParser _parser = new CommandParser();
+        private readonly CommandParser _parser = TestParsers.CreateDefault();
 
         [Fact]
         public void Parse_EmptyInput_ThrowsWithInputAsParamName()

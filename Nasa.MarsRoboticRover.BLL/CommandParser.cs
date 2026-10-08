@@ -1,102 +1,54 @@
-﻿using Nasa.MarsRoboticRover.BLL.Interfaces;
-using Nasa.MarsRoboticRover.Entities;
-using Nasa.MarsRoboticRover.BLL.Commands;
-using Nasa.MarsRoboticRover.Entities.Interfaces;
+﻿using Nasa.MarsRoboticRover.BLL.Commands;
+using Nasa.MarsRoboticRover.BLL.Interfaces;
+using Nasa.MarsRoboticRover.BLL.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Nasa.MarsRoboticRover.BLL
 {
+    /// <summary>
+    /// Walks the input line by line, delegates each line to the <see cref="ILineParser"/> that understands it
+    /// and enforces the ordering of the input: plateau first, then (rover, instructions) pairs.
+    /// </summary>
     public class CommandParser : IParser
     {
+        private readonly IReadOnlyList<ILineParser> _lineParsers;
+
+        public CommandParser(IEnumerable<ILineParser> lineParsers)
+        {
+            _lineParsers = lineParsers.ToList();
+        }
+
         public List<ICommand> Parse(string commandInput)
         {
+            if (string.IsNullOrWhiteSpace(commandInput))
+            {
+                throw new ArgumentException("Empty input.", "input");
+            }
+
             List<ICommand> commands = new List<ICommand>();
+            bool isFirstLine = true;
+            bool roverSeen = false;
 
-            if (string.IsNullOrEmpty(commandInput))
+            foreach (InputLine line in InputLine.Split(commandInput))
             {
-                throw new ArgumentException($"Empty input.", "input");
+                ILineParser lineParser = FindParser(line);
+
+                ValidateOrder(lineParser.Kind, line, isFirstLine, roverSeen);
+
+                if (lineParser.Kind == LineKind.Rover && roverSeen)
+                {
+                    commands.Add(new PrintPositionAndCompassDirectionCommand());
+                }
+
+                commands.AddRange(lineParser.Parse(line));
+
+                roverSeen |= lineParser.Kind == LineKind.Rover;
+                isFirstLine = false;
             }
 
-            List<InputLine> commandLines = GetCommandLines(commandInput);
-
-            int currentRoverIndex = -1;
-
-            for (int i = 0; i < commandLines.Count; i++)
-            {
-                string commandLine = commandLines[i].Text;
-                int lineNumber = commandLines[i].Number;
-
-                if (commandLine.Length == 0)
-                {
-                    throw new ArgumentException($"Empty line not allowed on line {lineNumber}.", "input");
-                }
-
-                string[] commandLineParts = commandLine.Split();
-
-                if (char.IsDigit(commandLine[0]))
-                {
-                    if (commandLineParts.Count() < 2 || commandLineParts.Count() > 3)
-                    {
-                        throw new ArgumentException($"Line starting with digit must have either two or three parts on line {lineNumber}.", "input");
-                    }
-
-                    if (!int.TryParse(commandLineParts[0], out int x) || x < 0)
-                    {
-                        throw new ArgumentException($"Cannot parse positive integer from {commandLineParts[0]} on line {lineNumber}.", "input");
-                    }
-
-                    if (!int.TryParse(commandLineParts[1], out int y) || y < 0)
-                    {
-                        throw new ArgumentException($"Cannot parse positive integer from {commandLineParts[1]} on line {lineNumber}.", "input");
-                    }
-
-                    if (commandLineParts.Count() == 2)
-                    {
-                        if (i != 0)
-                        {
-                            throw new ArgumentException($"Plateau initialization should be on the first line on line {lineNumber}.", "input");
-                        }
-
-                        Position position = new Position(x, y);
-
-                        ICommand locationInitializeCommand = new DefinePlateauCommand(position);
-
-                        commands.Add(locationInitializeCommand);
-                    }
-
-                    else
-                    {
-                        if (commandLineParts[2].Length != 1 || !CompassDirectionExtensions.TryParse(commandLineParts[2][0], out CompassDirection compassDirection))
-                        {
-                            throw new ArgumentException($"Rover initialization line should have either N, E, S, or W on the last part on line {lineNumber}.", "input");
-                        }
-
-                        if (currentRoverIndex != -1)
-                        {
-                            commands.Add(new PrintPositionAndCompassDirectionCommand());
-                        }
-
-                        currentRoverIndex++;
-
-                        Position roverPosition = new Position(x, y);
-
-                        ICommand roverCreationCommand = new DeployRoverCommand(roverPosition, compassDirection);
-
-                        commands.Add(roverCreationCommand);
-                    }
-                }
-                else
-                {
-                    foreach (char rotationString in commandLine)
-                    {
-                        SetRoverCommand(commands, lineNumber, rotationString);
-                    }
-                }
-            }
-
-            if (currentRoverIndex != -1)
+            if (roverSeen)
             {
                 commands.Add(new PrintPositionAndCompassDirectionCommand());
             }
@@ -104,42 +56,34 @@ namespace Nasa.MarsRoboticRover.BLL
             return commands;
         }
 
-        private void SetRoverCommand(List<ICommand> commands, int lineNumber, char rotationCharacter)
+        private ILineParser FindParser(InputLine line)
         {
-            switch (rotationCharacter)
+            ILineParser lineParser = _lineParsers.FirstOrDefault(parser => parser.CanParse(line));
+
+            if (lineParser == null)
             {
-                case 'L':
-                    {
-                        ICommand rotatorCommand = new RoverRotatorCommand(Rotation.Left);
-                        commands.Add(rotatorCommand);
-                        break;
-                    }
-                case 'R':
-                    {
-                        ICommand rotatorCommand = new RoverRotatorCommand(Rotation.Right);
-                        commands.Add(rotatorCommand);
-                        break;
-                    }
-                case 'M':
-                    {
-                        ICommand moveRoverCommand = new MoveRoverCommand();
-                        commands.Add(moveRoverCommand);
-                        break;
-                    }
-                default:
-                    throw new ArgumentException($"Rover rotation/move line should have either L, R, or M characters on line {lineNumber}.", "input");
+                throw new ArgumentException($"Line {line.Number} is not a plateau (X Y), a rover position (X Y H) or a list of instructions.", "input");
+            }
+
+            return lineParser;
+        }
+
+        private static void ValidateOrder(LineKind kind, InputLine line, bool isFirstLine, bool roverSeen)
+        {
+            if (isFirstLine && kind != LineKind.Plateau)
+            {
+                throw new ArgumentException($"The first line must define the plateau, found line {line.Number}.", "input");
+            }
+
+            if (!isFirstLine && kind == LineKind.Plateau)
+            {
+                throw new ArgumentException($"Plateau initialization should be on the first line on line {line.Number}.", "input");
+            }
+
+            if (kind == LineKind.Instructions && !roverSeen)
+            {
+                throw new ArgumentException($"Instructions on line {line.Number} must follow a rover position.", "input");
             }
         }
-
-        private List<InputLine> GetCommandLines(string commandInput)
-        {
-            string[] rawLines = commandInput.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
-
-            return rawLines.Select((line, index) => new InputLine(index + 1, line.Trim()))
-                           .Where(line => line.Text.Length > 0)
-                           .ToList();
-        }
-
-        private readonly record struct InputLine(int Number, string Text);
     }
 }

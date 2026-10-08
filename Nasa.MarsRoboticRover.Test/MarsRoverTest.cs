@@ -13,7 +13,7 @@ namespace Nasa.MarsRoboticRover.Test
         [Fact]
         public void CommandParser_Should_GenerateCommandsAndOutput()
         {
-            IParser commandParser = new CommandParser();
+            IParser commandParser = TestParsers.CreateDefault();
             ICommandCenter commandCenter = new CommandCenter();
 
             List<ICommand> commands = commandParser.Parse(new SampleMissionInputProvider().GetInput());
