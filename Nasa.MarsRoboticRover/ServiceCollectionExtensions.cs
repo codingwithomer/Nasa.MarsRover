@@ -10,6 +10,7 @@ namespace Nasa.MarsRoboticRover
         public static IServiceCollection AddMarsRover(this IServiceCollection services)
         {
             // All services are stateless: mission state lives in a MissionContext created per run.
+            // Default input; the console host replaces it with a file or stdin provider when asked to.
             services.AddSingleton<IMissionInputProvider, SampleMissionInputProvider>();
             services.AddSingleton<IInstructionSet>(_ => InstructionSet.CreateDefault());
             services.AddSingleton<ILineParser, PlateauLineParser>();

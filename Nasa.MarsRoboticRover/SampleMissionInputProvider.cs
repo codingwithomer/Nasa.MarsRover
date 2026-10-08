@@ -1,7 +1,7 @@
 ﻿using Nasa.MarsRoboticRover.Application.Interfaces;
 using System.Text;
 
-namespace Nasa.MarsRoboticRover.Application
+namespace Nasa.MarsRoboticRover
 {
     public class SampleMissionInputProvider : IMissionInputProvider
     {

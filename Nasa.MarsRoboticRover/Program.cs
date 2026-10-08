@@ -1,22 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 
 namespace Nasa.MarsRoboticRover
 {
     public class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
-            using ServiceProvider serviceProvider = new ServiceCollection()
-                .AddMarsRover()
-                .BuildServiceProvider(validateScopes: true);
-
-            Console.WriteLine(serviceProvider.GetRequiredService<MissionRunner>().Run());
+            int exitCode = ConsoleApplication.Run(args, Console.In, Console.IsInputRedirected, Console.Out, Console.Error);
 
             if (!Console.IsInputRedirected)
             {
                 Console.ReadKey();
             }
+
+            return exitCode;
         }
     }
 }

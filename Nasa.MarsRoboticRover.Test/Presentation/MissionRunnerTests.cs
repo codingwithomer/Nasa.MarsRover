@@ -8,7 +8,7 @@ namespace Nasa.MarsRoboticRover.Test.Presentation
     {
         private static ServiceProvider BuildProvider()
         {
-            return new ServiceCollection().AddMarsRover().BuildServiceProvider(validateScopes: true);
+            return new ServiceCollection().AddMarsRover().BuildServiceProvider();
         }
 
         [Fact]
