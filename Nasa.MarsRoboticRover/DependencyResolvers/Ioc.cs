@@ -13,6 +13,7 @@ namespace Nasa.MarsRoboticRover.DependencyResolvers
 
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<IMissionInputProvider, SampleMissionInputProvider>();
             services.AddScoped<IParser, CommandParser>();
             services.AddScoped<ICommandCenter, CommandCenter>();
             services.AddScoped<ILocation, Plateau>();

@@ -11,7 +11,6 @@ namespace Nasa.MarsRoboticRover.Test
 
     public class MarsRoverTest
     {
-        private readonly string _testInput;
         private readonly ICommandCenter _commandCenter;
         private readonly ILocation _location;
 
@@ -19,18 +18,16 @@ namespace Nasa.MarsRoboticRover.Test
         {
             _location = new Plateau();
             _commandCenter = new CommandCenter(_location);
-            _testInput = _commandCenter.SetCommandInputs();
         }
 
         [Fact]
         public void CommandParser_Should_GenerateCommandsAndOutput()
         {
             IParser commandParser = new CommandParser();
-            List<ICommand> commands = commandParser.Parse(_testInput);
-            _commandCenter.ExecuteCommands(commands);
-            string output = _commandCenter.GetReportOutput();
-            string expectedString = string.Join(Environment.NewLine, "Test Input:", "5 5", "1 2 N", "LMLMLMLMM", "3 3 E", "MMRMMRMRRM", "", "", "Expected Output:", "1 3 N", "5 1 E", "");
-            Assert.Equal(expectedString, output.ToString());
+            List<ICommand> commands = commandParser.Parse(new SampleMissionInputProvider().GetInput());
+            string output = _commandCenter.ExecuteCommands(commands);
+            string expectedString = string.Join(Environment.NewLine, "1 3 N", "5 1 E", "");
+            Assert.Equal(expectedString, output);
         }
 
         [Fact]

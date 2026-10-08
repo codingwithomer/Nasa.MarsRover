@@ -16,19 +16,15 @@ namespace Nasa.MarsRoboticRover
 
             Ioc.ConfigureServices(services, configuration);
 
+            var inputProvider = Ioc.GetService<IMissionInputProvider>();
+            var commandParser = Ioc.GetService<IParser>();
             var commandCenter = Ioc.GetService<ICommandCenter>();
 
-            var commandInput = commandCenter.SetCommandInputs();
-
-            var commandParser = Ioc.GetService<IParser>();
-
+            var commandInput = inputProvider.GetInput();
             var commands = commandParser.Parse(commandInput);
+            var results = commandCenter.ExecuteCommands(commands);
 
-            commandCenter.ExecuteCommands(commands);
-
-            var reportOutput = commandCenter.GetReportOutput();
-
-            Console.WriteLine(reportOutput);
+            Console.WriteLine(MissionReportFormatter.Format(commandInput, results));
 
             Console.ReadKey();
         }
