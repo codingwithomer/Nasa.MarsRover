@@ -1,5 +1,4 @@
 ﻿using Nasa.MarsRoboticRover.Domain;
-using Nasa.MarsRoboticRover.Domain.Interfaces;
 using System;
 using Xunit;
 
@@ -7,7 +6,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
 {
     public class MarsRoverBehaviorTests
     {
-        private static IRover CreateRover(int x, int y, CompassDirection direction)
+        private static MarsRover CreateRover(int x, int y, CompassDirection direction)
         {
             return new Plateau(new Position(5, 5)).Deploy(new Position(x, y), direction);
         }
@@ -19,7 +18,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         [InlineData(CompassDirection.West, 1, 2)]
         public void Move_AdvancesOneSquareInFacingDirection(CompassDirection direction, int expectedX, int expectedY)
         {
-            IRover rover = CreateRover(2, 2, direction);
+            MarsRover rover = CreateRover(2, 2, direction);
 
             rover.Move();
 
@@ -34,7 +33,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         [InlineData(CompassDirection.East, CompassDirection.North)]
         public void Rotate_Left_TurnsCounterClockwise(CompassDirection start, CompassDirection expected)
         {
-            IRover rover = CreateRover(2, 2, start);
+            MarsRover rover = CreateRover(2, 2, start);
 
             rover.Rotate(Rotation.Left);
 
@@ -49,7 +48,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         [InlineData(CompassDirection.West, CompassDirection.North)]
         public void Rotate_Right_TurnsClockwise(CompassDirection start, CompassDirection expected)
         {
-            IRover rover = CreateRover(2, 2, start);
+            MarsRover rover = CreateRover(2, 2, start);
 
             rover.Rotate(Rotation.Right);
 
@@ -64,7 +63,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         [InlineData(0, 0, CompassDirection.West)]
         public void Move_OffThePlateau_ThrowsAndKeepsPosition(int x, int y, CompassDirection direction)
         {
-            IRover rover = CreateRover(x, y, direction);
+            MarsRover rover = CreateRover(x, y, direction);
 
             Assert.Throws<InvalidOperationException>(() => rover.Move());
             Assert.Equal(new Position(x, y), rover.Position);

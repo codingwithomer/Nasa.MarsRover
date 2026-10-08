@@ -1,4 +1,4 @@
-﻿using Nasa.MarsRoboticRover.Domain.Interfaces;
+﻿using Nasa.MarsRoboticRover.Domain;
 using System;
 using System.Collections.Generic;
 
@@ -8,16 +8,16 @@ namespace Nasa.MarsRoboticRover.Application
     public class MissionContext
     {
         private readonly List<string> _reportLines = new List<string>();
-        private IPlateau _plateau;
-        private IRover _currentRover;
+        private Plateau _plateau;
+        private MarsRover _currentRover;
 
-        public IPlateau Plateau => _plateau ?? throw new InvalidOperationException("The plateau has not been defined yet.");
+        public Plateau Plateau => _plateau ?? throw new InvalidOperationException("The plateau has not been defined yet.");
 
-        public IRover CurrentRover => _currentRover ?? throw new InvalidOperationException("No rover has been deployed yet.");
+        public MarsRover CurrentRover => _currentRover ?? throw new InvalidOperationException("No rover has been deployed yet.");
 
         public IReadOnlyList<string> ReportLines => _reportLines;
 
-        public void DefinePlateau(IPlateau plateau)
+        public void DefinePlateau(Plateau plateau)
         {
             if (_plateau != null)
             {
@@ -27,7 +27,7 @@ namespace Nasa.MarsRoboticRover.Application
             _plateau = plateau;
         }
 
-        public void SetCurrentRover(IRover rover)
+        public void SetCurrentRover(MarsRover rover)
         {
             _currentRover = rover;
         }

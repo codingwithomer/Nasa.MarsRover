@@ -3,7 +3,7 @@ using System;
 
 namespace Nasa.MarsRoboticRover.Domain
 {
-    public class MarsRover : IRover
+    public class MarsRover
     {
         private const int DirectionCount = 4;
 

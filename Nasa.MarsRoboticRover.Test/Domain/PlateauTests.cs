@@ -34,7 +34,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         [Fact]
         public void Deploy_OutsideThePlateau_Throws()
         {
-            IPlateau plateau = new Plateau(new Position(5, 5));
+            Plateau plateau = new Plateau(new Position(5, 5));
 
             ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => plateau.Deploy(new Position(6, 0), CompassDirection.North));
 
@@ -44,7 +44,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         [Fact]
         public void Deploy_WithUndefinedHeading_Throws()
         {
-            IPlateau plateau = new Plateau(new Position(5, 5));
+            Plateau plateau = new Plateau(new Position(5, 5));
 
             ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => plateau.Deploy(new Position(1, 1), (CompassDirection)99));
 
@@ -54,7 +54,7 @@ namespace Nasa.MarsRoboticRover.Test.Domain
         [Fact]
         public void IsPositionFree_ReflectsDeployedRovers()
         {
-            IPlateau plateau = new Plateau(new Position(5, 5));
+            Plateau plateau = new Plateau(new Position(5, 5));
             Assert.True(plateau.IsPositionFree(new Position(2, 2)));
 
             plateau.Deploy(new Position(2, 2), CompassDirection.North);

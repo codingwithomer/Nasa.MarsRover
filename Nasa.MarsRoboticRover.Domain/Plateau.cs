@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace Nasa.MarsRoboticRover.Domain
 {
-    public class Plateau : IPlateau
+    public class Plateau : ITerrain
     {
-        private readonly List<IRover> _rovers = new List<IRover>();
+        private readonly List<MarsRover> _rovers = new List<MarsRover>();
         private readonly Position _upperRight;
 
         public Plateau(Position upperRight)
@@ -20,6 +20,8 @@ namespace Nasa.MarsRoboticRover.Domain
             _upperRight = upperRight;
         }
 
+        public IReadOnlyList<MarsRover> Rovers => _rovers;
+
         public bool IsPositionValid(Position position)
         {
             return position.IsWithin(Position.Origin, _upperRight);
@@ -30,7 +32,7 @@ namespace Nasa.MarsRoboticRover.Domain
             return !_rovers.Any(rover => rover.Position == position);
         }
 
-        public IRover Deploy(Position position, CompassDirection compassDirection)
+        public MarsRover Deploy(Position position, CompassDirection compassDirection)
         {
             if (!Enum.IsDefined(compassDirection))
             {

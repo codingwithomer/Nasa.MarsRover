@@ -2,7 +2,6 @@
 using Nasa.MarsRoboticRover.Application.Interfaces;
 using Nasa.MarsRoboticRover.Domain;
 using Nasa.MarsRoboticRover.Test.Application;
-using Nasa.MarsRoboticRover.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -27,9 +26,9 @@ namespace Nasa.MarsRoboticRover.Test.Acceptance
         [Fact]
         public void Rovers_ShouldEndUpWhereTheMissionBriefSays()
         {
-            IPlateau plateau = new Plateau(new Position(5, 5));
+            Plateau plateau = new Plateau(new Position(5, 5));
 
-            IRover rover1 = plateau.Deploy(new Position(1, 2), CompassDirection.North);
+            MarsRover rover1 = plateau.Deploy(new Position(1, 2), CompassDirection.North);
             rover1.Rotate(Rotation.Left);
             rover1.Move();
             rover1.Rotate(Rotation.Left);
@@ -40,7 +39,7 @@ namespace Nasa.MarsRoboticRover.Test.Acceptance
             rover1.Move();
             rover1.Move();
 
-            IRover rover2 = plateau.Deploy(new Position(3, 3), CompassDirection.East);
+            MarsRover rover2 = plateau.Deploy(new Position(3, 3), CompassDirection.East);
             rover2.Move();
             rover2.Move();
             rover2.Rotate(Rotation.Right);
