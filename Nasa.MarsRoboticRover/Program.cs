@@ -8,7 +8,7 @@ namespace Nasa.MarsRoboticRover
         {
             int exitCode = ConsoleApplication.Run(args, Console.In, Console.IsInputRedirected, Console.Out, Console.Error);
 
-            if (!Console.IsInputRedirected)
+            if (ConsoleApplication.ShouldWaitForKey(args, Console.IsInputRedirected, exitCode))
             {
                 Console.ReadKey();
             }
