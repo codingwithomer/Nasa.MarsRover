@@ -51,3 +51,31 @@ Expected Output:
 <br>
 5 1 E
 
+
+## Architecture
+
+Dependencies point inwards only (enforced by `DependencyRuleTests`):
+
+```
+Nasa.MarsRoboticRover              console app and composition root (DI wiring, report formatting)
+  -> Nasa.MarsRoboticRover.Application   use cases: parsing, commands, mission execution
+       -> Nasa.MarsRoboticRover.Domain   Plateau, MarsRover, Position, compass/rotation rules
+```
+
+- **Domain** knows nothing about input, commands or output. `Plateau` is created with its size, enforces bounds and
+  occupancy, and is the only way to deploy a `MarsRover`. Rovers depend on the narrow `ITerrain` interface.
+- **Application** turns text into commands (`CommandParser` + one `ILineParser` per line kind) and runs them against a
+  per-run `MissionContext` (`CommandCenter`). All services are stateless.
+- **Console** wires everything in `AddMarsRover()` and prints the report.
+
+Extending the system:
+
+| To add...                    | Do this                                                                 |
+|------------------------------|-------------------------------------------------------------------------|
+| a new instruction letter     | add a `letter -> command` entry to the `InstructionLineParser` registry |
+| a new kind of input line     | implement `ILineParser` and register it                                 |
+| a different input source     | implement `IMissionInputProvider` (file, stdin, ...) and register it    |
+| a new rover/mission behavior | add an `ICommand`; it works on `MissionContext`                         |
+
+Patterns used, each where the problem asks for it: Command (`ICommand`), Strategy (`ILineParser`),
+Factory/registry (instruction letters), Dependency Injection (constructor injection, composition root).
