@@ -31,16 +31,19 @@ namespace Nasa.MarsRoboticRover.Application
         {
             ArgumentNullException.ThrowIfNull(commandInput);
 
-            if (string.IsNullOrWhiteSpace(commandInput))
+            List<InputLine> lines = InputLine.Split(commandInput);
+
+            if (lines.Count == 0)
             {
                 throw new InvalidMissionException("Empty input.");
             }
 
             List<ICommand> commands = new List<ICommand>();
+            int unfinishedRoverLine = 0;
             bool isFirstLine = true;
             bool roverSeen = false;
 
-            foreach (InputLine line in InputLine.Split(commandInput))
+            foreach (InputLine line in lines)
             {
                 ILineParser lineParser = FindParser(line);
 
@@ -49,13 +52,37 @@ namespace Nasa.MarsRoboticRover.Application
 
                 ValidateOrder(lineParser.Kind, line, isFirstLine, roverSeen);
 
+                if (lineParser.Kind == LineKind.Rover && unfinishedRoverLine != 0)
+                {
+                    throw NoInstructions(unfinishedRoverLine);
+                }
+
+                if (lineParser.Kind == LineKind.Rover)
+                {
+                    unfinishedRoverLine = line.Number;
+                }
+                else if (lineParser.Kind == LineKind.Instructions)
+                {
+                    unfinishedRoverLine = 0;
+                }
+
                 commands.AddRange(lineCommands.Select(command => new SourceLineCommand(command, line.Number)));
 
                 roverSeen |= lineParser.Kind == LineKind.Rover;
                 isFirstLine = false;
             }
 
+            if (unfinishedRoverLine != 0)
+            {
+                throw NoInstructions(unfinishedRoverLine);
+            }
+
             return commands;
+        }
+
+        private static InvalidMissionException NoInstructions(int roverLine)
+        {
+            return new InvalidMissionException($"The rover on line {roverLine} has no instructions; each rover needs a line of instructions after its position.");
         }
 
         private ILineParser FindParser(InputLine line)

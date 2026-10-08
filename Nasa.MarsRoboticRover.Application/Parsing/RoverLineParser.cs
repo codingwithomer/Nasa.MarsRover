@@ -11,7 +11,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
 
         public bool CanParse(InputLine line)
         {
-            return LineValueParser.StartsWithDigit(line) && line.Parts.Length == 3;
+            return !line.IsFirst && LineValueParser.LooksLikeCoordinates(line);
         }
 
         public IReadOnlyList<ICommand> Parse(InputLine line)
@@ -21,7 +21,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
             return new ICommand[]
             {
                 new DeployRoverCommand(
-                    LineValueParser.ParsePosition(line, parts),
+                    LineValueParser.ParseRoverPosition(line, parts),
                     LineValueParser.ParseCompassDirection(line, parts[2]))
             };
         }

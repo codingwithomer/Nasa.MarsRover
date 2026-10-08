@@ -20,7 +20,7 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
 
         public bool CanParse(InputLine line)
         {
-            return !LineValueParser.StartsWithDigit(line);
+            return !line.IsFirst && !LineValueParser.LooksLikeCoordinates(line);
         }
 
         public IReadOnlyList<ICommand> Parse(InputLine line)
@@ -31,14 +31,28 @@ namespace Nasa.MarsRoboticRover.Application.Parsing
             {
                 if (!_instructionSet.TryGetCommand(letter, out ICommand command))
                 {
-                    throw new InvalidMissionException(
-                        $"Unknown instruction '{letter}' on line {line.Number}. Allowed instructions: {string.Join(", ", _instructionSet.Letters)}.");
+                    throw new InvalidMissionException(Describe(letter, line));
                 }
 
                 commands.Add(command);
             }
 
             return commands;
+        }
+
+        private string Describe(char letter, InputLine line)
+        {
+            if (char.IsWhiteSpace(letter))
+            {
+                return $"Spaces are not allowed inside instructions on line {line.Number} (write 'MM', not 'M M').";
+            }
+
+            if (_instructionSet.TryGetCommand(char.ToUpperInvariant(letter), out _))
+            {
+                return $"Letters must be upper case: use '{char.ToUpperInvariant(letter)}' instead of '{letter}' on line {line.Number}.";
+            }
+
+            return $"Unknown instruction '{letter}' on line {line.Number}. Allowed instructions: {string.Join(", ", _instructionSet.Letters)}.";
         }
     }
 }

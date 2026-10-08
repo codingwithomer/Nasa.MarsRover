@@ -114,7 +114,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [Fact]
         public void Execute_RoverLeavingASquare_LetsTheNextRoverUseIt()
         {
-            string report = Run("5 5\n1 1 N\nM\n1 1 E");
+            string report = Run("5 5\n1 1 N\nM\n1 1 E\nLR");
 
             Assert.Equal(string.Join(Environment.NewLine, "1 2 N", "1 1 E", ""), report);
         }

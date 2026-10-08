@@ -13,7 +13,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [InlineData("W")]
         public void Heading_SurvivesAParseExecuteReportRoundTrip(string heading)
         {
-            string report = new MissionExecutor().Execute(TestParsers.CreateDefault().Parse($"5 5\n2 2 {heading}"));
+            string report = new MissionExecutor().Execute(TestParsers.CreateDefault().Parse($"5 5\n2 2 {heading}\nLR"));
 
             Assert.Equal($"2 2 {heading}{Environment.NewLine}", report);
         }
@@ -24,7 +24,7 @@ namespace Nasa.MarsRoboticRover.Test.Application
         [InlineData("X")]
         public void Heading_ThatIsNotASingleCompassLetter_IsRejected(string heading)
         {
-            Assert.Throws<InvalidMissionException>(() => TestParsers.CreateDefault().Parse($"5 5\n2 2 {heading}"));
+            Assert.Throws<InvalidMissionException>(() => TestParsers.CreateDefault().Parse($"5 5\n2 2 {heading}\nLR"));
         }
     }
 }
